@@ -98,6 +98,17 @@ abstract class UberallProvider implements \ArrayAccess
      */
     public function setData(array $data)
     {
+        $this->data = [];
+
+        return $this->addData($data);
+    }
+
+    /**
+     * @param array $data
+     * @return self
+     */
+    public function addData(array $data)
+    {
         foreach ($data as $offset => $value) {
             $this->offsetSet($offset, $value);
         }

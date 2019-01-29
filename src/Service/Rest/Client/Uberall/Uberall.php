@@ -8,36 +8,19 @@ use Localfr\UberallBundle\src\Exception\UserException;
 class Uberall extends UberallClient
 {
     /**
-     * @var AccessToken
-     */
-    private $accessToken;
-
-    /**
-     * @var User
+     * @var UserClient
      */
     private $user;
 
     /**
-     * @var Location
+     * @var LocationClient
      */
     private $location;
 
     /**
-     * @var Business
+     * @var BusinessClient
      */
     private $business;
-
-    /**
-     * @param AccessToken $accessToken
-     * @param UberallClient $client
-     */
-    public function __construct(AccessToken $accessToken, User $user, Location $location, Business $business)
-    {
-        $this->accessToken = $accessToken;
-        $this->user = $user;
-        $this->location = $location;
-        $this->business = $business;
-    }
 
     /**
      * @param string $connectedUserEmail
@@ -45,10 +28,11 @@ class Uberall extends UberallClient
      *
      * @return string
      * @throws UserException
+     * @throws \Exception
      */
     public function getAutologinUrl($connectedUserEmail, $email = null)
     {
-        if (!empty($connectedUserEmail)) {
+        if (empty($connectedUserEmail)) {
             throw new UserException('Connected user has not email.');
         }
         $user = $this->user->getByEmail($connectedUserEmail);
@@ -59,12 +43,13 @@ class Uberall extends UberallClient
         } else {
             $client = $user;
         }
-        if ($user && $client && count($client['managedLocations'])) {
+
+        if ($user && $client && count($client->managedLocations)) {
             return sprintf(
                 '%s/fr/app/localfr/locationEdit/%s?access_token=%s',
                 $this->getBaseUrl(),
-                $client['managedLocations'][0],
-                $this->accessToken->getAccessToken($connectedUserEmail)
+                $client->managedLocations[0],
+                $this->getAccessToken($connectedUserEmail)
             );
         }
 
@@ -72,45 +57,61 @@ class Uberall extends UberallClient
     }
 
     /**
-     * @param array $data
+     * @param UserClient $user
      *
-     * @return array with the 3 keys corresponding to the 3 objects which constitute a functioning uberall account
+     * @return Uberall
      */
-    public function createUberallEntities($data)
+    public function setUserClient(UserClient $user): self
     {
-        $return = [];
-        try {
-            $return['business'] = $this->business->create($data);
-            $return['location'] = $this->location->create($data, $return['business']);
-            $return['user'] = $this->user->create($data, $return['location']);
-            $return['message'] = ' without any error';
-        } catch (\Exception $exception) {
-            $return['message'] = sprintf(' with following error : %', $exception->getMessage());
-        }
+        $this->user = $user;
 
-        return $return;
+        return $this;
     }
 
     /**
-     * @return User
+     * @param LocationClient $location
+     *
+     * @return Uberall
      */
-    public function getUserProvider()
+    public function setLocationClient(LocationClient $location): self
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * @param BusinessClient $business
+     *
+     * @return Uberall
+     */
+    public function setBusinessClient(BusinessClient $business): self
+    {
+        $this->business = $business;
+
+        return $this;
+    }
+
+    /**
+     * @return UserClient
+     */
+    public function getUserClient(): UserClient
     {
         return $this->user;
     }
 
     /**
-     * @return Location
+     * @return LocationClient
      */
-    public function getLocationProvider()
+    public function getLocationClient(): LocationClient
     {
         return $this->location;
     }
 
     /**
-     * @return Business
+     * @return BusinessClient
      */
-    public function getBusinessProvider()
+    public function getBusinessClient(): BusinessClient
     {
         return $this->business;
     }

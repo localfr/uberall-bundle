@@ -11,7 +11,7 @@ namespace Localfr\UberallBundle\src\Provider;
  * @property string $phone
  * @property string $country
  */
-class Business extends UberallProvider
+class BusinessProvider extends UberallProvider
 {
     protected function getFieldNames(): array
     {

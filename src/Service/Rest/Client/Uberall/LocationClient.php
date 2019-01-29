@@ -3,11 +3,11 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Provider\Location as LocationProvider;
+use Localfr\UberallBundle\src\Provider\LocationProvider as LocationProvider;
 use Localfr\UberallBundle\src\Exception\LocationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class Location extends UberallClient
+class LocationClient extends UberallClient
 {
     /**
      * @param $locationId

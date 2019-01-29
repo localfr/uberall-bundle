@@ -3,11 +3,11 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Provider\User as UserProvider;
+use Localfr\UberallBundle\src\Provider\UserProvider as UserProvider;
 use Localfr\UberallBundle\src\Exception\UserException;
 use Symfony\Component\HttpFoundation\Response;
 
-class User extends UberallClient
+class UserClient extends UberallClient
 {
     /**
      * @param string $email

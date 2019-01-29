@@ -13,7 +13,7 @@ namespace Localfr\UberallBundle\src\Provider;
  * @property string $role
  * @property string $status
  */
-class User extends UberallProvider
+class UserProvider extends UberallProvider
 {
     protected function getFieldNames(): array
     {

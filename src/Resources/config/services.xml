@@ -10,19 +10,34 @@
             <argument>%uberall_api%</argument>
         </service>
 
-        <service id="localfr.uberall.client.token" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\AccessToken" public="true" />
+        <service id="localfr.uberall.client.user" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\UserClient"
+                 public="true"
+                 parent="localfr.uberall.client.uberall_base"
+        />
 
-        <service id="localfr.uberall.client.user" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\User" public="true" />
+        <service id="localfr.uberall.client.location" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\LocationClient"
+                 public="true"
+                 parent="localfr.uberall.client.uberall_base"
+        />
 
-        <service id="localfr.uberall.client.location" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Location" public="true" />
+        <service id="localfr.uberall.client.business" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\BusinessClient"
+                 public="true"
+                 parent="localfr.uberall.client.uberall_base"
+        />
 
-        <service id="localfr.uberall.client.business" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Business" public="true" />
-
-        <service id="localfr.uberall.client.uberall" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Uberall" public="true">
-            <argument type="service" id="localfr.uberall.client.token" />
-            <argument type="service" id="localfr.uberall.client.user" />
-            <argument type="service" id="localfr.uberall.client.location" />
-            <argument type="service" id="localfr.uberall.client.business" />
+        <service id="localfr.uberall.client.uberall"
+                 class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Uberall"
+                 parent="localfr.uberall.client.uberall_base"
+                 public="true">
+            <call method="setUserClient">
+                <argument type="service" id="localfr.uberall.client.user" />
+            </call>
+            <call method="setLocationClient">
+                <argument type="service" id="localfr.uberall.client.location" />
+            </call>
+            <call method="setBusinessClient">
+                <argument type="service" id="localfr.uberall.client.business" />
+            </call>
         </service>
     </services>
 </container>

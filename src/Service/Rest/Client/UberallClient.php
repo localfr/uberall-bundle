@@ -3,6 +3,7 @@
 namespace Localfr\UberallBundle\Service\Rest\Client;
 
 use Buzz\Browser;
+use Localfr\UberallBundle\src\Exception\UnsolvedTokenException;
 
 class UberallClient
 {
@@ -15,6 +16,11 @@ class UberallClient
      * @var array
      */
     private $config;
+
+    /**
+     * @var string
+     */
+    private $accessToken;
 
     /**
      * @param Browser $browser
@@ -86,6 +92,46 @@ class UberallClient
     public function getBaseUrl()
     {
         return $this->config['base_url'];
+    }
+
+    /**
+     * @param $userEmail
+     *
+     * @return mixed
+     *
+     * @throws UnsolvedTokenException
+     */
+    private function generateUserAccessToken($userEmail)
+    {
+        if (empty($userEmail)) {
+            throw new UnsolvedTokenException('Email is required.');
+        }
+
+        $json = json_encode([
+            'email' => $userEmail,
+        ]);
+
+        $content = $this->post('/api/users/login', $json);
+        if ('SUCCESS' === $content->status) {
+            return $content->response->access_token;
+        }
+
+        throw new UnsolvedTokenException(sprintf('Unable to get the uberall token, due to the fallowing error %s', $content->message), Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @param $userEmail
+     *
+     * @return mixed|string
+     * @throws \Exception
+     */
+    public function getAccessToken($userEmail)
+    {
+        if (!isset($this->accessToken)){
+            $this->accessToken = $this->generateUserAccessToken($userEmail);
+        }
+
+        return $this->accessToken;
     }
 
     /**

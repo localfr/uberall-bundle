@@ -1,7 +1,7 @@
 {
-    "name": "localfr/uberall-bundle",
+    "name": "jmilazzo/uberall-bundle",
     "type": "symfony-bundle",
-    "description": "A Symfony Bundle for uberall library",
+    "description": "A Symfony Bundle for the jmilazzo/uberall library",
     "keywords": [],
     "license": "MIT",
     "authors": [
@@ -16,6 +16,6 @@
         "symfony/framework-bundle": "~4.0"
     },
     "autoload": {
-        "psr-4": { "Localfr\\UberallBundle\\": "" }
+        "psr-4": { "Jmilazzo\\UberallBundle\\": "" }
     }
 }

@@ -18,7 +18,7 @@ namespace Localfr\UberallBundle\src\Provider;
  * @property string $email
  * @property string $legalIdent
  */
-class Location extends UberallProvider
+class LocationProvider extends UberallProvider
 {
     protected function getFieldNames(): array
     {

@@ -3,11 +3,11 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Provider\Business as BusinessProvider;
+use Localfr\UberallBundle\src\Provider\BusinessProvider as BusinessProvider;
 use Localfr\UberallBundle\src\Exception\BusinessException;
 use Symfony\Component\HttpFoundation\Response;
 
-class Business extends UberallClient
+class BusinessClient extends UberallClient
 {
     /**
      * @param BusinessProvider $businessData
