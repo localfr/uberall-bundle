@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="localfr.uberall.client.uberall_base" class="Localfr\UberallBundle\Service\Rest\Client\UberallClient">
+            <argument type="service" id="buzz" />
+            <argument>%uberall_api%</argument>
+        </service>
+
+        <service id="localfr.uberall.client.token" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\AccessToken" public="true" />
+
+        <service id="localfr.uberall.client.user" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\User" public="true" />
+
+        <service id="localfr.uberall.client.location" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Location" public="true" />
+
+        <service id="localfr.uberall.client.business" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Business" public="true" />
+
+        <service id="localfr.uberall.client.uberall" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Uberall" public="true">
+            <argument type="service" id="localfr.uberall.client.token" />
+            <argument type="service" id="localfr.uberall.client.user" />
+            <argument type="service" id="localfr.uberall.client.location" />
+            <argument type="service" id="localfr.uberall.client.business" />
+        </service>
+    </services>
+</container>

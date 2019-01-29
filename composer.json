@@ -1,0 +1,21 @@
+{
+    "name": "localfr/uberall-bundle",
+    "type": "symfony-bundle",
+    "description": "A Symfony Bundle for uberall library",
+    "keywords": [],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "",
+            "email": "",
+            "homepage": ""
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "symfony/framework-bundle": "~4.0"
+    },
+    "autoload": {
+        "psr-4": { "Localfr\\UberallBundle\\": "" }
+    }
+}
