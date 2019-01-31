@@ -3,7 +3,8 @@
 namespace Localfr\UberallBundle\Service\Rest\Client;
 
 use Buzz\Browser;
-use Localfr\UberallBundle\src\Exception\UnsolvedTokenException;
+use Localfr\UberallBundle\Exception\UnsolvedTokenException;
+use Symfony\Component\HttpFoundation\Response;
 
 class UberallClient
 {
@@ -47,14 +48,14 @@ class UberallClient
 
     /**
      * @param $service
-     * @param $data
+     * @param $json
      * @param array $headers
      *
      * @return mixed
      */
-    public function post(string $service, $data, array $headers = []): \stdClass
+    public function post(string $service, $json, array $headers = []): \stdClass
     {
-        $response = $this->browser->post($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $data);
+        $response = $this->browser->post($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $json);
 
         return json_decode($response->getContent());
     }
@@ -74,14 +75,14 @@ class UberallClient
 
     /**
      * @param $service
-     * @param $data
+     * @param $json
      * @param array $headers
      *
      * @return mixed
      */
-    public function patch(string $service, $data, $headers = []): \stdClass
+    public function patch(string $service, $json, $headers = []): \stdClass
     {
-        $response = $this->browser->patch($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $data);
+        $response = $this->browser->patch($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $json);
 
         return json_decode($response->getContent());
     }
@@ -92,6 +93,21 @@ class UberallClient
     public function getBaseUrl()
     {
         return $this->config['base_url'];
+    }
+
+    /**
+     * @param $userEmail
+     *
+     * @return mixed|string
+     * @throws \Exception
+     */
+    public function getAccessToken($userEmail)
+    {
+        if (!isset($this->accessToken)){
+            $this->accessToken = $this->generateUserAccessToken($userEmail);
+        }
+
+        return $this->accessToken;
     }
 
     /**
@@ -116,22 +132,10 @@ class UberallClient
             return $content->response->access_token;
         }
 
-        throw new UnsolvedTokenException(sprintf('Unable to get the uberall token, due to the fallowing error %s', $content->message), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * @param $userEmail
-     *
-     * @return mixed|string
-     * @throws \Exception
-     */
-    public function getAccessToken($userEmail)
-    {
-        if (!isset($this->accessToken)){
-            $this->accessToken = $this->generateUserAccessToken($userEmail);
-        }
-
-        return $this->accessToken;
+        throw new UnsolvedTokenException(
+            sprintf('Unable to get the uberall token, due to the fallowing error %s', $content->message),
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
     }
 
     /**

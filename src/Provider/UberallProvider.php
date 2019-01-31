@@ -1,6 +1,6 @@
 <?php
 
-namespace Localfr\UberallBundle\src\Provider;
+namespace Localfr\UberallBundle\Provider;
 
 abstract class UberallProvider implements \ArrayAccess
 {

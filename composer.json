@@ -1,21 +1,27 @@
 {
-    "name": "jmilazzo/uberall-bundle",
+    "name": "localfr/uberall-bundle",
     "type": "symfony-bundle",
-    "description": "A Symfony Bundle for the jmilazzo/uberall library",
-    "keywords": [],
+    "description": "A Symfony Bundle for uberall",
+    "keywords": ["uberall"],
     "license": "MIT",
     "authors": [
         {
-            "name": "",
-            "email": "",
-            "homepage": ""
+            "name": "local.fr",
+            "email": "developpeurs-web@local.fr"
         }
     ],
     "require": {
         "php": ">=7.1",
-        "symfony/framework-bundle": "~4.0"
+        "symfony/framework-bundle": "~4.0",
+        "kriswallsmith/buzz": "^0.16.1"
     },
     "autoload": {
-        "psr-4": { "Jmilazzo\\UberallBundle\\": "" }
+        "psr-4": {
+            "Localfr\\UberallBundle\\": "src/",
+            "Localfr\\UberallBundle\\Tests\\": "Tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
     }
 }

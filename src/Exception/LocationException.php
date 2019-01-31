@@ -1,6 +1,6 @@
 <?php
 
-namespace Localfr\UberallBundle\src\Exception;
+namespace Localfr\UberallBundle\Exception;
 
 class LocationException extends \Exception
 {

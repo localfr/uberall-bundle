@@ -3,7 +3,7 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Exception\UserException;
+use Localfr\UberallBundle\Exception\UserException;
 
 class Uberall extends UberallClient
 {

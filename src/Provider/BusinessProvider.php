@@ -1,6 +1,6 @@
 <?php
 
-namespace Localfr\UberallBundle\src\Provider;
+namespace Localfr\UberallBundle\Provider;
 
 /**
  * @property string $id

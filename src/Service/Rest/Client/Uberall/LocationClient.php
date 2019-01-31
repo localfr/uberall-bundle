@@ -3,8 +3,8 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Provider\LocationProvider as LocationProvider;
-use Localfr\UberallBundle\src\Exception\LocationException;
+use Localfr\UberallBundle\Provider\LocationProvider as LocationProvider;
+use Localfr\UberallBundle\Exception\LocationException;
 use Symfony\Component\HttpFoundation\Response;
 
 class LocationClient extends UberallClient
@@ -86,7 +86,7 @@ class LocationClient extends UberallClient
             return $postContent->response->location;
         }
 
-        throw new LocationException(sprintf('Error on location creation : %s', $content->message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        throw new LocationException(sprintf('Error on location creation : %s', $postContent->message), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**

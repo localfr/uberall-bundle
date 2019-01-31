@@ -3,8 +3,8 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\src\Provider\BusinessProvider as BusinessProvider;
-use Localfr\UberallBundle\src\Exception\BusinessException;
+use Localfr\UberallBundle\Provider\BusinessProvider as BusinessProvider;
+use Localfr\UberallBundle\Exception\BusinessException;
 use Symfony\Component\HttpFoundation\Response;
 
 class BusinessClient extends UberallClient
@@ -51,7 +51,7 @@ class BusinessClient extends UberallClient
             return $postContent->response->business;
         }
 
-        throw new BusinessException(sprintf('Error on business creation : %s', $content->message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        throw new BusinessException(sprintf('Error on business creation : %s', $postContent->message), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
