@@ -92,13 +92,13 @@ class UberallClientTest extends TestCase
                 ->willReturn($responseMock);
         }
 
-        $uberallClient = new UberallClient($browserMock, $this->config);
+        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertInstanceOf('stdClass', $uberallClient->$method($uri, $json, []));
     }
 
     public function testGetBaseUrl()
     {
-        $uberallClient = new UberallClient($this->getBrowserMock(), $this->config);
+        $uberallClient = new UberallClient($this->getBrowserMock(), $this->getMonologMock(), $this->config);
         $this->assertEquals($this->config['base_url'], $uberallClient->getBaseUrl());
     }
 
@@ -106,7 +106,7 @@ class UberallClientTest extends TestCase
     {
         $this->expectException('Localfr\UberallBundle\Exception\UnsolvedTokenException');
         $this->expectExceptionMessage('Email is required.');
-        $uberallClient = new UberallClient($this->getBrowserMock(), $this->config);
+        $uberallClient = new UberallClient($this->getBrowserMock(), $this->getMonologMock(), $this->config);
         $uberallClient->getAccessToken(null);
     }
 
@@ -127,7 +127,7 @@ class UberallClientTest extends TestCase
             ->method('post')
             ->willReturn($responseMock);
 
-        $uberallClient = new UberallClient($browserMock, $this->config);
+        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
         $uberallClient->getAccessToken('my-email@my-website.com');
     }
 
@@ -143,7 +143,7 @@ class UberallClientTest extends TestCase
             ->method('post')
             ->willReturn($responseMock);
 
-        $uberallClient = new UberallClient($browserMock, $this->config);
+        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertEquals($this->token, $uberallClient->getAccessToken('my-email@my-website.com'));
     }
 
@@ -177,6 +177,16 @@ class UberallClientTest extends TestCase
     protected function getBrowserMock()
     {
         return $this->getMockBuilder('Buzz\Browser')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject
+     */
+    protected function getMonologMock()
+    {
+        return $this->getMockBuilder('Monolog\Logger')
             ->disableOriginalConstructor()
             ->getMock();
     }

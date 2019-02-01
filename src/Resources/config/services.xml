@@ -7,6 +7,7 @@
     <services>
         <service id="localfr.uberall.client.uberall_base" class="Localfr\UberallBundle\Service\Rest\Client\UberallClient">
             <argument type="service" id="buzz" />
+            <argument type="service" id="localfr.uberall.monolog" />
             <argument>%uberall_api%</argument>
         </service>
 
@@ -38,6 +39,10 @@
             <call method="setBusinessClient">
                 <argument type="service" id="localfr.uberall.client.business" />
             </call>
+        </service>
+
+        <service id="localfr.uberall.monolog" class="Monolog\Logger">
+            <argument>uberall</argument>
         </service>
     </services>
 </container>

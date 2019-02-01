@@ -5,7 +5,6 @@ namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
 use Localfr\UberallBundle\Provider\LocationProvider;
 use Localfr\UberallBundle\Exception\LocationException;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class LocationClient extends UberallClient
@@ -52,8 +51,7 @@ class LocationClient extends UberallClient
         if ($content->response->count > 0) {
             foreach ($content->response->locations as $location) {
                 if ($locationData->name == $location->name) {
-                    $logger = new Logger('Uberall');
-                    $logger->addInfo(sprintf('Location %s already exists', $location->name));
+                    $this->logger->addInfo(sprintf('Location %s already exists', $location->name));
 
                     return $location;
                 }
@@ -78,8 +76,7 @@ class LocationClient extends UberallClient
 
         $postContent = $this->post('/api/locations', $json);
         if ('SUCCESS' === $postContent->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('Location %s successfully created', $postContent->response->location->name));
+            $this->logger->addInfo(sprintf('Location %s successfully created', $postContent->response->location->name));
 
             return $postContent->response->location;
         }
@@ -98,8 +95,7 @@ class LocationClient extends UberallClient
     {
         $content = $this->patch('/api/locations/' . $id, json_encode(['status' => $status]));
         if ('SUCCESS' === $content->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
+            $this->logger->addInfo(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
 
             return;
         }
@@ -118,8 +114,7 @@ class LocationClient extends UberallClient
     {
         $content = $this->delete('/api/locations/' . $id);
         if ('SUCCESS' === $content->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('Location %d successfully deleted', $id));
+            $this->logger->addInfo(sprintf('Location %d successfully deleted', $id));
 
             return;
         }

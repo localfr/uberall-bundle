@@ -5,7 +5,6 @@ namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
 use Localfr\UberallBundle\Provider\UserProvider as UserProvider;
 use Localfr\UberallBundle\Exception\UserException;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserClient extends UberallClient
@@ -63,8 +62,7 @@ class UserClient extends UberallClient
         $content = $this->post('/api/users', $json);
 
         if ('SUCCESS' === $content->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('User %s successfully created', $content->response->user->email));
+            $this->logger->addInfo(sprintf('User %s successfully created', $content->response->user->email));
 
             return $content->response->user;
         }
@@ -84,9 +82,7 @@ class UserClient extends UberallClient
     {
         $content = $this->delete('/api/users/' . $id);
         if ('SUCCESS' === $content->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('User %d successfully deleted', $id));
-            echo 'User ' . $id . ' successfully deleted' . PHP_EOL;
+            $this->logger->addInfo(sprintf('User %d successfully deleted', $id));
 
             return;
         }

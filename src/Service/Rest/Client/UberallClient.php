@@ -4,6 +4,7 @@ namespace Localfr\UberallBundle\Service\Rest\Client;
 
 use Buzz\Browser;
 use Localfr\UberallBundle\Exception\UnsolvedTokenException;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class UberallClient
@@ -12,6 +13,11 @@ class UberallClient
      * @var Browser
      */
     private $browser;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * @var array
@@ -25,11 +31,13 @@ class UberallClient
 
     /**
      * @param Browser $browser
+     * @param Logger $logger
      * @param array $config
      */
-    public function __construct(Browser $browser, array $config)
+    public function __construct(Browser $browser, Logger $logger, array $config)
     {
         $this->browser = $browser;
+        $this->logger = $logger;
         $this->config = $config;
     }
 

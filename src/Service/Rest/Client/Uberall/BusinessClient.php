@@ -5,7 +5,6 @@ namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
 use Localfr\UberallBundle\Provider\BusinessProvider as BusinessProvider;
 use Localfr\UberallBundle\Exception\BusinessException;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class BusinessClient extends UberallClient
@@ -27,8 +26,7 @@ class BusinessClient extends UberallClient
         if ($content->response->count > 0) {
             foreach ($content->response->businesses as $business) {
                 if ($businessData->name == $business->name) {
-                    $logger = new Logger('Uberall');
-                    $logger->addInfo(sprintf('Business %s already exists', $business->name));
+                    $this->logger->addInfo(sprintf('Business %s already exists', $business->name));
 
                     return $business;
                 }
@@ -46,8 +44,7 @@ class BusinessClient extends UberallClient
 
         $postContent = $this->post('/api/businesses', $json);
         if ('SUCCESS' === $postContent->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('Business %s successfully created', $postContent->response->business->name));
+            $this->logger->addInfo(sprintf('Business %s successfully created', $postContent->response->business->name));
 
             return $postContent->response->business;
         }
@@ -65,8 +62,7 @@ class BusinessClient extends UberallClient
     {
         $content = $this->delete('/api/businesses/' . $id);
         if ('SUCCESS' === $content->status) {
-            $logger = new Logger('Uberall');
-            $logger->addInfo(sprintf('Business %d successfully deleted', $id));
+            $this->logger->addInfo(sprintf('Business %d successfully deleted', $id));
 
             return;
         }

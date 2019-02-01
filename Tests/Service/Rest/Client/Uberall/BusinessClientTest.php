@@ -25,7 +25,7 @@ class BusinessClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\BusinessException');
         $this->expectExceptionMessage('Error while calling Uberall business API.');
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
         $businessClient->create($this->getBusinessProvider());
     }
 
@@ -41,7 +41,12 @@ class BusinessClientTest extends UberallClientTest
             ->method('get')
             ->willReturn($responseMock);
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Business %s already exists', $this->businessName));
+
+        $businessClient = new BusinessClient($browserMock, $loggerMock, $this->config);
         $this->assertEquals($this->getBusiness(), $businessClient->create($this->getBusinessProvider()));
     }
 
@@ -75,7 +80,7 @@ class BusinessClientTest extends UberallClientTest
         $this->expectExceptionCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         $this->expectExceptionMessage(sprintf('Error on business creation : %s', $message));
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
         $businessClient->create($this->getBusinessProvider());
     }
 
@@ -104,7 +109,12 @@ class BusinessClientTest extends UberallClientTest
             )
             ->willReturn($responseMock);
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Business %s successfully created', $this->businessName));
+
+        $businessClient = new BusinessClient($browserMock, $loggerMock, $this->config);
         $this->assertEquals($this->getBusiness(), $businessClient->create($this->getBusinessProvider()));
     }
 
@@ -126,7 +136,7 @@ class BusinessClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\BusinessException');
         $this->expectExceptionMessage(sprintf('Error on business deletion : %s', $message));
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
         $businessClient->remove($id);
     }
 
@@ -144,7 +154,7 @@ class BusinessClientTest extends UberallClientTest
             ->with($this->config['base_url'] . '/api/businesses/' . $id)
             ->willReturn($responseMock);
 
-        $businessClient = new BusinessClient($browserMock, $this->config);
+        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertNull($businessClient->remove($id));
     }
 

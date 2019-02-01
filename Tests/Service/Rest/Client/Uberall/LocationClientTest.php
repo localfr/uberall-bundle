@@ -22,7 +22,7 @@ class LocationClientTest extends UberallClientTest
             ->with($this->config['base_url'] . '/api/locations/' . $this->locationIdentifier)
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertNull($locationClient->getLocation($this->locationIdentifier));
     }
 
@@ -39,7 +39,7 @@ class LocationClientTest extends UberallClientTest
             ->with($this->config['base_url'] . '/api/locations/' . $this->locationIdentifier)
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertEquals($this->getLocation(), $locationClient->getLocation($this->locationIdentifier));
     }
 
@@ -57,7 +57,7 @@ class LocationClientTest extends UberallClientTest
             ->with($this->config['base_url'] . '/api/locations?max=' . $maxLocations)
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $results = $locationClient->getLocations($maxLocations);
         $this->assertNotEmpty($results);
         $this->assertEquals($this->getLocation(), $results[0]);
@@ -76,7 +76,7 @@ class LocationClientTest extends UberallClientTest
             ->with($this->config['base_url'] . '/api/locations?max=50000')
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $this->assertEmpty($locationClient->getLocations());
     }
 
@@ -96,7 +96,7 @@ class LocationClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\LocationException');
         $this->expectExceptionMessage('Error while calling Uberall location API.');
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $locationClient->create($this->getLocationProvider());
     }
 
@@ -112,7 +112,12 @@ class LocationClientTest extends UberallClientTest
             ->method('get')
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Location %s already exists', $this->locationName));
+
+        $locationClient = new LocationClient($browserMock, $loggerMock, $this->config);
         $this->assertEquals($this->getLocation(), $locationClient->create($this->getLocationProvider()));
     }
 
@@ -146,7 +151,7 @@ class LocationClientTest extends UberallClientTest
         $this->expectExceptionCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         $this->expectExceptionMessage(sprintf('Error on location creation : %s', $message));
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $locationClient->create($this->getLocationProvider());
     }
 
@@ -175,7 +180,12 @@ class LocationClientTest extends UberallClientTest
             )
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Location %s successfully created', $this->locationName));
+
+        $locationClient = new LocationClient($browserMock, $loggerMock, $this->config);
         $this->assertEquals($this->getLocation(), $locationClient->create($this->getLocationProvider()));
     }
 
@@ -206,7 +216,7 @@ class LocationClientTest extends UberallClientTest
         $this->expectExceptionCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         $this->expectExceptionMessage(sprintf('Error on location status %s change : %s', $status, $message));
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
         $locationClient->changeStatus($this->locationIdentifier, $status);
     }
 
@@ -232,13 +242,17 @@ class LocationClientTest extends UberallClientTest
             )
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Status of location %d successfully modified (status %s)', $this->locationIdentifier, $status));
+
+        $locationClient = new LocationClient($browserMock, $loggerMock, $this->config);
         $this->assertNull($locationClient->changeStatus($this->locationIdentifier, $status));
     }
 
     public function testRemoveWithError()
     {
-        $id = 7;
         $message = 'remove location error message';
         $responseMock = $this->getResponseMock();
         $responseMock->expects($this->once())
@@ -248,19 +262,18 @@ class LocationClientTest extends UberallClientTest
         $browserMock = $this->getBrowserMock();
         $browserMock->expects($this->once())
             ->method('delete')
-            ->with($this->config['base_url'] . '/api/locations/' . $id)
+            ->with($this->config['base_url'] . '/api/locations/' . $this->locationIdentifier)
             ->willReturn($responseMock);
 
         $this->expectException('Localfr\UberallBundle\Exception\LocationException');
         $this->expectExceptionMessage(sprintf('Error on location deletion : %s', $message));
 
-        $locationClient = new LocationClient($browserMock, $this->config);
-        $locationClient->remove($id);
+        $locationClient = new LocationClient($browserMock, $this->getMonologMock(), $this->config);
+        $locationClient->remove($this->locationIdentifier);
     }
 
     public function testRemoveWithSuccess()
     {
-        $id = 7;
         $responseMock = $this->getResponseMock();
         $responseMock->expects($this->once())
             ->method('getContent')
@@ -269,11 +282,16 @@ class LocationClientTest extends UberallClientTest
         $browserMock = $this->getBrowserMock();
         $browserMock->expects($this->once())
             ->method('delete')
-            ->with($this->config['base_url'] . '/api/locations/' . $id)
+            ->with($this->config['base_url'] . '/api/locations/' . $this->locationIdentifier)
             ->willReturn($responseMock);
 
-        $locationClient = new LocationClient($browserMock, $this->config);
-        $this->assertNull($locationClient->remove($id));
+        $loggerMock = $this->getMonologMock();
+        $loggerMock->expects($this->once())
+            ->method('addInfo')
+            ->with(sprintf('Location %d successfully deleted', $this->locationIdentifier));
+
+        $locationClient = new LocationClient($browserMock, $loggerMock, $this->config);
+        $this->assertNull($locationClient->remove($this->locationIdentifier));
     }
 
     /**
