@@ -15,6 +15,9 @@ namespace Localfr\UberallBundle\Provider;
  */
 class UserProvider extends UberallProvider
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function getFieldNames(): array
     {
         return [

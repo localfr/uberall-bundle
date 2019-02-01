@@ -124,7 +124,7 @@ class UserClientTest extends UberallClientTest
         $id = 8;
         $message = 'remove user error message';
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent($message));
 
@@ -145,7 +145,7 @@ class UserClientTest extends UberallClientTest
     {
         $id = 8;
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent());
 

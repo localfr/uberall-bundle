@@ -241,7 +241,7 @@ class LocationClientTest extends UberallClientTest
         $id = 7;
         $message = 'remove location error message';
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent($message));
 
@@ -262,7 +262,7 @@ class LocationClientTest extends UberallClientTest
     {
         $id = 7;
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent());
 

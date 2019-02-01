@@ -3,8 +3,9 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\Provider\LocationProvider as LocationProvider;
+use Localfr\UberallBundle\Provider\LocationProvider;
 use Localfr\UberallBundle\Exception\LocationException;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class LocationClient extends UberallClient
@@ -51,16 +52,13 @@ class LocationClient extends UberallClient
         if ($content->response->count > 0) {
             foreach ($content->response->locations as $location) {
                 if ($locationData->name == $location->name) {
-                    // @TODO : do it with another way ?
-                    echo 'Location ' . $location->name . ' already exists' . PHP_EOL;
+                    $logger = new Logger('Uberall');
+                    $logger->addInfo(sprintf('Location %s already exists', $location->name));
 
                     return $location;
                 }
             }
         }
-
-        /** @var string $siretToVerify : a 9 digits SIREN concatenated with a 5 digits NIC */
-        $siretToVerify = $locationData->legalIdent;
 
         $json = json_encode([
             'identifier' => $locationData->identifier,
@@ -75,13 +73,13 @@ class LocationClient extends UberallClient
             'autoSync' => $locationData->autoSync ?: 'true',
             'website' => $locationData->website,
             'email' => $locationData->email,
-            'legalIdent' => 14 === strlen($siretToVerify) ? $siretToVerify : '',
+            'legalIdent' => $locationData->legalIdent
         ]);
 
         $postContent = $this->post('/api/locations', $json);
         if ('SUCCESS' === $postContent->status) {
-            // @TODO : do it with another way ?
-            echo 'Location ' . $postContent->response->location->name . ' successfuly created' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('Location %s successfully created', $postContent->response->location->name));
 
             return $postContent->response->location;
         }
@@ -100,8 +98,8 @@ class LocationClient extends UberallClient
     {
         $content = $this->patch('/api/locations/' . $id, json_encode(['status' => $status]));
         if ('SUCCESS' === $content->status) {
-            // @TODO : do it with another way ?
-            echo 'Status of location ' . $id . ' successfuly modified (status ' . $status . ')' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
 
             return;
         }
@@ -120,8 +118,8 @@ class LocationClient extends UberallClient
     {
         $content = $this->delete('/api/locations/' . $id);
         if ('SUCCESS' === $content->status) {
-            // @TODO : do it with another way ?
-            echo 'Location ' . $id . ' successfuly deleted' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('Location %d successfully deleted', $id));
 
             return;
         }

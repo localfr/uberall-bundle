@@ -41,9 +41,7 @@ abstract class UberallProvider implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        if ($this->offsetExists($offset)) {
-            return $this->data[$offset] ?? null;
-        }
+        return $this->data[$offset] ?? null;
     }
 
     /**
@@ -51,7 +49,7 @@ abstract class UberallProvider implements \ArrayAccess
      * @param mixed $value
      * @return self
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): self
     {
         if ($this->offsetExists($offset)) {
             $this->data[$offset] = $value;
@@ -64,7 +62,7 @@ abstract class UberallProvider implements \ArrayAccess
      * @param mixed $offset
      * @return self
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): self
     {
         if ($this->offsetExists($offset)) {
             unset($this->data[$offset]);
@@ -78,7 +76,7 @@ abstract class UberallProvider implements \ArrayAccess
      * @param $value
      * @return self
      */
-    public function __set($offset, $value)
+    public function __set($offset, $value): self
     {
         return $this->offsetSet($offset, $value);
     }
@@ -96,7 +94,7 @@ abstract class UberallProvider implements \ArrayAccess
      * @param array $data
      * @return self
      */
-    public function setData(array $data)
+    public function setData(array $data): self
     {
         $this->data = [];
 
@@ -107,7 +105,7 @@ abstract class UberallProvider implements \ArrayAccess
      * @param array $data
      * @return self
      */
-    public function addData(array $data)
+    public function addData(array $data): self
     {
         foreach ($data as $offset => $value) {
             $this->offsetSet($offset, $value);

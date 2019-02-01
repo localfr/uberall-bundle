@@ -5,6 +5,7 @@ namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
 use Localfr\UberallBundle\Provider\BusinessProvider as BusinessProvider;
 use Localfr\UberallBundle\Exception\BusinessException;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class BusinessClient extends UberallClient
@@ -19,15 +20,15 @@ class BusinessClient extends UberallClient
     public function create(BusinessProvider $businessData)
     {
         $content = $this->get('/api/businesses/?query=' . $businessData->name);
-        if (!$content || 'SUCCESS' !== $content->status) {
+        if (!$content || 'SUCCESS' !== $content->status || !$content->response) {
             throw new BusinessException('Error while calling Uberall business API.');
         }
 
         if ($content->response->count > 0) {
             foreach ($content->response->businesses as $business) {
                 if ($businessData->name == $business->name) {
-                    // @TODO : do it with another way ?
-                    echo 'Business ' . $business->name . ' already exists' . PHP_EOL;
+                    $logger = new Logger('Uberall');
+                    $logger->addInfo(sprintf('Business %s already exists', $business->name));
 
                     return $business;
                 }
@@ -45,8 +46,8 @@ class BusinessClient extends UberallClient
 
         $postContent = $this->post('/api/businesses', $json);
         if ('SUCCESS' === $postContent->status) {
-            // @TODO : do it with another way ?
-            echo 'Business ' . $postContent->response->business->name . ' successfuly created' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('Business %s successfully created', $postContent->response->business->name));
 
             return $postContent->response->business;
         }
@@ -64,8 +65,8 @@ class BusinessClient extends UberallClient
     {
         $content = $this->delete('/api/businesses/' . $id);
         if ('SUCCESS' === $content->status) {
-            // @TODO : do it with another way ?
-            echo 'Business ' . $id . ' successfuly deleted' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('Business %d successfully deleted', $id));
 
             return;
         }

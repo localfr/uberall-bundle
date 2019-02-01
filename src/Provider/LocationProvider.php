@@ -20,6 +20,9 @@ namespace Localfr\UberallBundle\Provider;
  */
 class LocationProvider extends UberallProvider
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function getFieldNames(): array
     {
         return [

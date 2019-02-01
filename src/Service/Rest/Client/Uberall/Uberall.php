@@ -10,17 +10,17 @@ class Uberall extends UberallClient
     /**
      * @var UserClient
      */
-    private $user;
+    private $userClient;
 
     /**
      * @var LocationClient
      */
-    private $location;
+    private $locationClient;
 
     /**
      * @var BusinessClient
      */
-    private $business;
+    private $businessClient;
 
     /**
      * @param string $connectedUserEmail
@@ -30,16 +30,16 @@ class Uberall extends UberallClient
      * @throws UserException
      * @throws \Exception
      */
-    public function getAutologinUrl($connectedUserEmail, $email = null)
+    public function getAutologinUrl($connectedUserEmail, $email = null): string
     {
         if (empty($connectedUserEmail)) {
             throw new UserException('Connected user has not email.');
         }
-        $user = $this->user->getByEmail($connectedUserEmail);
+        $user = $this->userClient->getByEmail($connectedUserEmail);
 
         if (isset($email)) {
             $email = $connectedUserEmail;
-            $client = $this->user->getByEmail($email);
+            $client = $this->userClient->getByEmail($email);
         } else {
             $client = $user;
         }
@@ -57,37 +57,37 @@ class Uberall extends UberallClient
     }
 
     /**
-     * @param UserClient $user
+     * @param UserClient $userClient
      *
      * @return Uberall
      */
-    public function setUserClient(UserClient $user): self
+    public function setUserClient(UserClient $userClient): self
     {
-        $this->user = $user;
+        $this->userClient = $userClient;
 
         return $this;
     }
 
     /**
-     * @param LocationClient $location
+     * @param LocationClient $locationClient
      *
      * @return Uberall
      */
-    public function setLocationClient(LocationClient $location): self
+    public function setLocationClient(LocationClient $locationClient): self
     {
-        $this->location = $location;
+        $this->locationClient = $locationClient;
 
         return $this;
     }
 
     /**
-     * @param BusinessClient $business
+     * @param BusinessClient $businessClient
      *
      * @return Uberall
      */
-    public function setBusinessClient(BusinessClient $business): self
+    public function setBusinessClient(BusinessClient $businessClient): self
     {
-        $this->business = $business;
+        $this->businessClient = $businessClient;
 
         return $this;
     }
@@ -97,7 +97,7 @@ class Uberall extends UberallClient
      */
     public function getUserClient(): UserClient
     {
-        return $this->user;
+        return $this->userClient;
     }
 
     /**
@@ -105,7 +105,7 @@ class Uberall extends UberallClient
      */
     public function getLocationClient(): LocationClient
     {
-        return $this->location;
+        return $this->locationClient;
     }
 
     /**
@@ -113,6 +113,6 @@ class Uberall extends UberallClient
      */
     public function getBusinessClient(): BusinessClient
     {
-        return $this->business;
+        return $this->businessClient;
     }
 }

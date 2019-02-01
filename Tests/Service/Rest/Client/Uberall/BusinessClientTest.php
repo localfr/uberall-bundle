@@ -113,7 +113,7 @@ class BusinessClientTest extends UberallClientTest
         $id = 7;
         $message = 'remove business error message';
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent($message));
 
@@ -134,7 +134,7 @@ class BusinessClientTest extends UberallClientTest
     {
         $id = 7;
         $responseMock = $this->getResponseMock();
-        $responseMock->expects($this->once(1))
+        $responseMock->expects($this->once())
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent());
 

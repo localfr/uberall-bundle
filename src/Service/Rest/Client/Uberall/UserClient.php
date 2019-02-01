@@ -5,6 +5,7 @@ namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
 use Localfr\UberallBundle\Provider\UserProvider as UserProvider;
 use Localfr\UberallBundle\Exception\UserException;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserClient extends UberallClient
@@ -17,7 +18,7 @@ class UserClient extends UberallClient
      */
     public function getByEmail($email)
     {
-        if (!isset($email)) {
+        if (empty($email)) {
             throw new UserException('Missing email on main contact.');
         }
 
@@ -43,7 +44,6 @@ class UserClient extends UberallClient
      */
     public function create(UserProvider $userData)
     {
-
         if ($user = $this->getByEmail($userData->email)) {
             return $user;
         }
@@ -63,8 +63,8 @@ class UserClient extends UberallClient
         $content = $this->post('/api/users', $json);
 
         if ('SUCCESS' === $content->status) {
-            // @TODO : do it with another way ?
-            echo 'User ' . $content->response->user->email . ' successfuly created' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('User %s successfully created', $content->response->user->email));
 
             return $content->response->user;
         }
@@ -84,8 +84,9 @@ class UserClient extends UberallClient
     {
         $content = $this->delete('/api/users/' . $id);
         if ('SUCCESS' === $content->status) {
-            // @TODO : do it with another way ?
-            echo 'User ' . $id . ' successfuly deleted' . PHP_EOL;
+            $logger = new Logger('Uberall');
+            $logger->addInfo(sprintf('User %d successfully deleted', $id));
+            echo 'User ' . $id . ' successfully deleted' . PHP_EOL;
 
             return;
         }

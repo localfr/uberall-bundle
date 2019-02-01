@@ -60,7 +60,7 @@ class UberallClientTest extends TestCase
     }
 
     /**
-     * @dataProvider values
+     * @dataProvider restParamsSamples
      */
     public function testMethods($method, $uri, $json = null)
     {
@@ -114,7 +114,7 @@ class UberallClientTest extends TestCase
     {
         $errorMsg = 'my error message';
         $this->expectException('Localfr\UberallBundle\Exception\UnsolvedTokenException');
-        $this->expectExceptionMessage(sprintf('Unable to get the uberall token, due to the fallowing error %s', $errorMsg));
+        $this->expectExceptionMessage(sprintf('Unable to get the uberall token, due to the following error %s', $errorMsg));
         $this->expectExceptionCode(Response::HTTP_INTERNAL_SERVER_ERROR);
 
         $responseMock = $this->getResponseMock();
@@ -147,7 +147,7 @@ class UberallClientTest extends TestCase
         $this->assertEquals($this->token, $uberallClient->getAccessToken('my-email@my-website.com'));
     }
 
-    public function values()
+    public function restParamsSamples()
     {
         return [
             [
@@ -197,17 +197,12 @@ class UberallClientTest extends TestCase
      */
     protected function getErrorJsonContent($message = null)
     {
-        $response = new \stdClass();
-        $response->count = 1;
-
-        $stdClass = new \stdClass();
-        $stdClass->status = 'ERROR';
-        $stdClass->response = $response;
+        $jsonMessage = "";
         if ($message) {
-            $stdClass->message = $message;
+            $jsonMessage = sprintf(',"message":"%s"', $message);
         }
 
-        return json_encode($stdClass);
+        return sprintf('{"status":"ERROR","response":{"count":1}%s}', $jsonMessage);
     }
 
     /**

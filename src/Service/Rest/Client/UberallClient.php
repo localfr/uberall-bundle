@@ -90,7 +90,7 @@ class UberallClient
     /**
      * @return string
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         return $this->config['base_url'];
     }
@@ -101,7 +101,7 @@ class UberallClient
      * @return mixed|string
      * @throws \Exception
      */
-    public function getAccessToken($userEmail)
+    public function getAccessToken($userEmail): ?string
     {
         if (!isset($this->accessToken)){
             $this->accessToken = $this->generateUserAccessToken($userEmail);
@@ -117,7 +117,7 @@ class UberallClient
      *
      * @throws UnsolvedTokenException
      */
-    private function generateUserAccessToken($userEmail)
+    private function generateUserAccessToken($userEmail): string
     {
         if (empty($userEmail)) {
             throw new UnsolvedTokenException('Email is required.');
@@ -133,7 +133,7 @@ class UberallClient
         }
 
         throw new UnsolvedTokenException(
-            sprintf('Unable to get the uberall token, due to the fallowing error %s', $content->message),
+            sprintf('Unable to get the uberall token, due to the following error %s', $content->message),
             Response::HTTP_INTERNAL_SERVER_ERROR
         );
     }
@@ -141,7 +141,7 @@ class UberallClient
     /**
      * @return array
      */
-    private function getDefaultHeaders()
+    private function getDefaultHeaders(): array
     {
         return [
             'Cache-Control' => 'no-cache',
