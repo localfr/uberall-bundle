@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "A Symfony Bundle for uberall",
     "homepage": "https://github.com/localfr/uberall-bundle",
-    "keywords": ["uberall", "symfony"],
+    "keywords": ["uberall", "symfony", "bundle"],
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Localfr\\UberallBundle\\": "src/",
+            "Localfr\\UberallBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Localfr\\UberallBundle\\Tests\\": "Tests/"
         }
     },
