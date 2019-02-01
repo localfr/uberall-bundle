@@ -2,7 +2,8 @@
     "name": "localfr/uberall-bundle",
     "type": "symfony-bundle",
     "description": "A Symfony Bundle for uberall",
-    "keywords": ["uberall"],
+    "homepage": "https://github.com/localfr/uberall-bundle",
+    "keywords": ["uberall", "symfony"],
     "license": "MIT",
     "authors": [
         {
