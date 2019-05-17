@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <container xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="localfr.uberall.client.uberall_base" class="Localfr\UberallBundle\Service\Rest\Client\UberallClient">
+        <service id="localfr.uberall.client.uberall_base" class="Localfr\UberallBundle\Service\Rest\Client\UberallClient" autowire="true">
             <argument type="service" id="buzz" />
             <argument type="service" id="localfr.uberall.monolog" />
             <argument>%uberall_api%</argument>
         </service>
+        <service id="Localfr\UberallBundle\Service\Rest\Client\UberallClient" alias="localfr.uberall.client.uberall_base"/>
 
         <service id="localfr.uberall.client.user" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\UserClient"
                  public="true"
                  parent="localfr.uberall.client.uberall_base"
+                 autowire="true"
         />
+        <service id="Localfr\UberallBundle\Service\Rest\Client\Uberall\UserClient" alias="localfr.uberall.client.user"/>
 
         <service id="localfr.uberall.client.location" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\LocationClient"
                  public="true"
                  parent="localfr.uberall.client.uberall_base"
+                 autowire="true"
         />
+        <service id="Localfr\UberallBundle\Service\Rest\Client\Uberall\LocationClient" alias="localfr.uberall.client.location"/>
 
         <service id="localfr.uberall.client.business" class="Localfr\UberallBundle\Service\Rest\Client\Uberall\BusinessClient"
                  public="true"
                  parent="localfr.uberall.client.uberall_base"
+                 autowire="true"
         />
+        <service id="Localfr\UberallBundle\Service\Rest\Client\Uberall\BusinessClient" alias="localfr.uberall.client.business"/>
 
         <service id="localfr.uberall.client.uberall"
                  class="Localfr\UberallBundle\Service\Rest\Client\Uberall\Uberall"
                  parent="localfr.uberall.client.uberall_base"
-                 public="true">
+                 public="true"
+                 autowire="true"
+        >
             <call method="setUserClient">
                 <argument type="service" id="localfr.uberall.client.user" />
             </call>
@@ -40,9 +49,11 @@
                 <argument type="service" id="localfr.uberall.client.business" />
             </call>
         </service>
+        <service id="Localfr\UberallBundle\Service\Rest\Client\Uberall\Uberall" alias="localfr.uberall.client.uberall"/>
 
-        <service id="localfr.uberall.monolog" class="Monolog\Logger">
+        <service id="localfr.uberall.monolog" class="Monolog\Logger" autowire="true">
             <argument>uberall</argument>
         </service>
+        <service id="Monolog\Logger" alias="localfr.uberall.monolog"/>
     </services>
 </container>
