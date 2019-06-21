@@ -38,7 +38,6 @@ class Uberall extends UberallClient
         $user = $this->userClient->getByEmail($connectedUserEmail);
 
         if (isset($email)) {
-            $email = $connectedUserEmail;
             $client = $this->userClient->getByEmail($email);
         } else {
             $client = $user;
