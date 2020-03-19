@@ -14,7 +14,7 @@
     "require": {
         "php": ">=7.1",
         "symfony/framework-bundle": "~4.0",
-        "kriswallsmith/buzz": "^0.16.1",
+        "kriswallsmith/buzz": "^0.17.2",
         "symfony/monolog-bundle": "^3.3"
     },
     "autoload": {
