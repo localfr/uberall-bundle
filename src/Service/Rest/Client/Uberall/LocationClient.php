@@ -50,7 +50,7 @@ class LocationClient extends UberallClient
 
         if ($content->response->count > 0) {
             foreach ($content->response->locations as $location) {
-                if ($locationData->name == $location->name) {
+                if ($locationData->name == $location->name || $locationData->identifier === $location->identifier) {
                     $this->logger->addInfo(sprintf('Location %s already exists', $location->name));
 
                     return $location;
