@@ -12,7 +12,7 @@ class UberallTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\UserException');
         $this->expectExceptionMessage('Connected user has not email.');
 
-        $uberall = new Uberall($this->getBrowserMock(), $this->getMonologMock(), $this->config);
+        $uberall = new Uberall($this->getHttpClientMock(), $this->getLoggerMock(), $this->config);
         $uberall->getAutologinUrl(null);
     }
 
@@ -27,7 +27,7 @@ class UberallTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\UserException');
         $this->expectExceptionMessage(sprintf('User %s not exist in Uberall.', $this->email));
 
-        $uberall = new Uberall($this->getBrowserMock(), $this->getMonologMock(), $this->config);
+        $uberall = new Uberall($this->getHttpClientMock(), $this->getLoggerMock(), $this->config);
         $uberall->setUserClient($userClientMock);
         $uberall->getAutologinUrl($this->email);
     }
@@ -43,7 +43,7 @@ class UberallTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('post')
             ->willReturn($responseMock);
@@ -54,7 +54,7 @@ class UberallTest extends UberallClientTest
             ->with($this->email)
             ->willReturn($user);
 
-        $uberall = new Uberall($browserMock, $this->getMonologMock(), $this->config);
+        $uberall = new Uberall($browserMock, $this->getLoggerMock(), $this->config);
         $uberall->setUserClient($userClientMock);
         $this->assertEquals(sprintf(
             '%s/fr/app/localfr/locationEdit/%s?access_token=%s',

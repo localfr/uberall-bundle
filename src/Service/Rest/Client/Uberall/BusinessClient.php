@@ -26,7 +26,7 @@ class BusinessClient extends UberallClient
         if ($content->response->count > 0) {
             foreach ($content->response->businesses as $business) {
                 if ($businessData->name == $business->name) {
-                    $this->logger->addInfo(sprintf('Business %s already exists', $business->name));
+                    $this->logger->info(sprintf('Business %s already exists', $business->name));
 
                     return $business;
                 }
@@ -44,7 +44,7 @@ class BusinessClient extends UberallClient
 
         $postContent = $this->post('/api/businesses', $json);
         if ('SUCCESS' === $postContent->status) {
-            $this->logger->addInfo(sprintf('Business %s successfully created', $postContent->response->business->name));
+            $this->logger->info(sprintf('Business %s successfully created', $postContent->response->business->name));
 
             return $postContent->response->business;
         }
@@ -62,7 +62,7 @@ class BusinessClient extends UberallClient
     {
         $content = $this->delete('/api/businesses/' . $id);
         if ('SUCCESS' === $content->status) {
-            $this->logger->addInfo(sprintf('Business %d successfully deleted', $id));
+            $this->logger->info(sprintf('Business %d successfully deleted', $id));
 
             return;
         }

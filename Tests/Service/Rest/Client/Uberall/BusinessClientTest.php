@@ -16,16 +16,16 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getErrorJsonContent());
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('get')
-            ->with($this->config['base_url'] . '/api/businesses/?query=' . $this->businessName)
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
+            ->with('GET', $this->config['base_url'] . '/api/businesses/?query=' . $this->businessName)
             ->willReturn($responseMock);
 
         $this->expectException('Localfr\UberallBundle\Exception\BusinessException');
         $this->expectExceptionMessage('Error while calling Uberall business API.');
 
-        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $businessClient->create($this->getBusinessProvider());
     }
 
@@ -36,17 +36,17 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('get')
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->willReturn($responseMock);
 
-        $loggerMock = $this->getMonologMock();
+        $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
             ->method('addInfo')
             ->with(sprintf('Business %s already exists', $this->businessName));
 
-        $businessClient = new BusinessClient($browserMock, $loggerMock, $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $loggerMock, $this->config);
         $this->assertEquals($this->getBusiness(), $businessClient->create($this->getBusinessProvider()));
     }
 
@@ -58,21 +58,25 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent(0), $this->getErrorJsonContent($message));
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('get')
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
+            ->method('GET')
             ->willReturn($responseMock);
 
-        $browserMock->expects($this->once())
-            ->method('post')
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->with(
+                'POST',
                 $this->equalTo($this->config['base_url'] . '/api/businesses'),
-                $this->equalTo([
-                    'Cache-Control' => 'no-cache',
-                    'content-type' => 'application/json',
-                    'privateKey' => $this->config['private_key']
-                ]),
-                $this->isJson()
+                [
+                    'headers' =>  $this->equalTo([
+                        'Cache-Control' => 'no-cache',
+                        'content-type' => 'application/json',
+                        'privateKey' => $this->config['private_key']
+                    ]),
+                    'body' => $this->isJson()
+                ]
             )
             ->willReturn($responseMock);
 
@@ -80,7 +84,7 @@ class BusinessClientTest extends UberallClientTest
         $this->expectExceptionCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         $this->expectExceptionMessage(sprintf('Error on business creation : %s', $message));
 
-        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $businessClient->create($this->getBusinessProvider());
     }
 
@@ -91,30 +95,33 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent(0), $this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('get')
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->willReturn($responseMock);
 
-        $browserMock->expects($this->once())
-            ->method('post')
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->with(
+                'DELETE',
                 $this->equalTo($this->config['base_url'] . '/api/businesses'),
-                $this->equalTo([
-                    'Cache-Control' => 'no-cache',
-                    'content-type' => 'application/json',
-                    'privateKey' => $this->config['private_key']
-                ]),
-                $this->isJson()
+                [
+                    'headers' => $this->equalTo([
+                        'Cache-Control' => 'no-cache',
+                        'content-type' => 'application/json',
+                        'privateKey' => $this->config['private_key']
+                    ]),
+                    'body' => $this->isJson()
+                ]
             )
             ->willReturn($responseMock);
 
-        $loggerMock = $this->getMonologMock();
+        $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
             ->method('addInfo')
             ->with(sprintf('Business %s successfully created', $this->businessName));
 
-        $businessClient = new BusinessClient($browserMock, $loggerMock, $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $loggerMock, $this->config);
         $this->assertEquals($this->getBusiness(), $businessClient->create($this->getBusinessProvider()));
     }
 
@@ -127,16 +134,16 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent($message));
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('delete')
-            ->with($this->config['base_url'] . '/api/businesses/' . $id)
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
+            ->with('DELETE', $this->config['base_url'] . '/api/businesses/' . $id)
             ->willReturn($responseMock);
 
         $this->expectException('Localfr\UberallBundle\Exception\BusinessException');
         $this->expectExceptionMessage(sprintf('Error on business deletion : %s', $message));
 
-        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $businessClient->remove($id);
     }
 
@@ -148,13 +155,13 @@ class BusinessClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('delete')
-            ->with($this->config['base_url'] . '/api/businesses/' . $id)
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
+            ->with('DELETE', $this->config['base_url'] . '/api/businesses/' . $id)
             ->willReturn($responseMock);
 
-        $businessClient = new BusinessClient($browserMock, $this->getMonologMock(), $this->config);
+        $businessClient = new BusinessClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $this->assertNull($businessClient->remove($id));
     }
 

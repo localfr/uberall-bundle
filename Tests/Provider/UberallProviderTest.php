@@ -3,7 +3,7 @@
 namespace Localfr\UberallBundle\Tests\Provider;
 
 use Localfr\UberallBundle\Provider\UberallProvider;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class UberallProviderTest extends TestCase
 {
