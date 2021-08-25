@@ -2,20 +2,20 @@
 
 namespace Localfr\UberallBundle\Service\Rest\Client;
 
-use Buzz\Browser;
 use Localfr\UberallBundle\Exception\UnsolvedTokenException;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class UberallClient
 {
     /**
-     * @var Browser
+     * @var HttpClientInterface
      */
-    private $browser;
+    private $httpClient;
 
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -30,13 +30,13 @@ class UberallClient
     private $accessToken;
 
     /**
-     * @param Browser $browser
-     * @param Logger $logger
+     * @param HttpClientInterface $httpClient
+     * @param LoggerInterface $logger
      * @param array $config
      */
-    public function __construct(Browser $browser, Logger $logger, array $config)
+    public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger, array $config)
     {
-        $this->browser = $browser;
+        $this->httpClient = $httpClient;
         $this->logger = $logger;
         $this->config = $config;
     }
@@ -49,13 +49,17 @@ class UberallClient
      */
     public function get(string $service, array $headers = []): \stdClass
     {
-        $response = $this->browser->get($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers));
+        $response = $this->httpClient->request('GET', $this->getBaseUrl() . $service,
+            [
+                'headers' => array_merge($this->getDefaultHeaders(), $headers)
+            ]
+        );
 
         return json_decode($response->getContent());
     }
 
     /**
-     * @param $service
+     * @param string $service
      * @param $json
      * @param array $headers
      *
@@ -63,26 +67,35 @@ class UberallClient
      */
     public function post(string $service, $json, array $headers = []): \stdClass
     {
-        $response = $this->browser->post($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $json);
+        $response = $this->httpClient->request('POST', $this->getBaseUrl() . $service,
+            [
+                'headers' => array_merge($this->getDefaultHeaders(), $headers),
+                'body' => $json
+            ]
+        );
 
         return json_decode($response->getContent());
     }
 
     /**
-     * @param $service
+     * @param string $service
      * @param array $headers
      *
      * @return mixed
      */
     public function delete(string $service, array $headers = []): \stdClass
     {
-        $response = $this->browser->delete($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers));
+        $response = $this->httpClient->request('DELETE', $this->getBaseUrl() . $service,
+            [
+                'headers' => array_merge($this->getDefaultHeaders(), $headers)
+            ]
+        );
 
         return json_decode($response->getContent());
     }
 
     /**
-     * @param $service
+     * @param string $service
      * @param $json
      * @param array $headers
      *
@@ -90,7 +103,12 @@ class UberallClient
      */
     public function patch(string $service, $json, $headers = []): \stdClass
     {
-        $response = $this->browser->patch($this->getBaseUrl() . $service, array_merge($this->getDefaultHeaders(), $headers), $json);
+        $response = $this->httpClient->request('PATCH', $this->getBaseUrl() . $service,
+            [
+                'headers' => array_merge($this->getDefaultHeaders(), $headers),
+                'body' => $json
+            ]
+        );
 
         return json_decode($response->getContent());
     }

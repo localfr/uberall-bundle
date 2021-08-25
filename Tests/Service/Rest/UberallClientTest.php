@@ -2,9 +2,9 @@
 
 namespace Localfr\UberallBundle\Tests\Service\Rest;
 
-use Buzz\Message\Response;
 use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class UberallClientTest extends TestCase
 {
@@ -69,11 +69,11 @@ class UberallClientTest extends TestCase
             ->method('getContent')
             ->willReturn(json_encode(new \stdClass()));
 
-        $browserMock = $this->getBrowserMock();
+        $httpClientMock = $this->getHttpClientMock();
 
         if ($json) {
             $json = json_encode($json);
-            $browserMock->expects($this->once())
+            $httpClientMock->expects($this->once())
                 ->method($method)
                 ->with(
                     $this->equalTo($this->config['base_url'] . $uri),
@@ -83,7 +83,7 @@ class UberallClientTest extends TestCase
                 ->willReturn($responseMock);
         } else {
             $json = [];
-            $browserMock->expects($this->once())
+            $httpClientMock->expects($this->once())
                 ->method($method)
                 ->with(
                     $this->equalTo($this->config['base_url'] . $uri),
@@ -92,13 +92,13 @@ class UberallClientTest extends TestCase
                 ->willReturn($responseMock);
         }
 
-        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
+        $uberallClient = new UberallClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $this->assertInstanceOf('stdClass', $uberallClient->$method($uri, $json, []));
     }
 
     public function testGetBaseUrl()
     {
-        $uberallClient = new UberallClient($this->getBrowserMock(), $this->getMonologMock(), $this->config);
+        $uberallClient = new UberallClient($this->getHttpClientMock(), $this->getLoggerMock(), $this->config);
         $this->assertEquals($this->config['base_url'], $uberallClient->getBaseUrl());
     }
 
@@ -106,7 +106,7 @@ class UberallClientTest extends TestCase
     {
         $this->expectException('Localfr\UberallBundle\Exception\UnsolvedTokenException');
         $this->expectExceptionMessage('Email is required.');
-        $uberallClient = new UberallClient($this->getBrowserMock(), $this->getMonologMock(), $this->config);
+        $uberallClient = new UberallClient($this->getHttpClientMock(), $this->getLoggerMock(), $this->config);
         $uberallClient->getAccessToken(null);
     }
 
@@ -122,12 +122,12 @@ class UberallClientTest extends TestCase
             ->method('getContent')
             ->willReturn($this->getErrorJsonContent($errorMsg));
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('post')
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->willReturn($responseMock);
 
-        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
+        $uberallClient = new UberallClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $uberallClient->getAccessToken('my-email@my-website.com');
     }
 
@@ -138,12 +138,12 @@ class UberallClientTest extends TestCase
             ->method('getContent')
             ->willReturn($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
-        $browserMock->expects($this->once())
-            ->method('post')
+        $httpClientMock = $this->getHttpClientMock();
+        $httpClientMock->expects($this->once())
+            ->method('request')
             ->willReturn($responseMock);
 
-        $uberallClient = new UberallClient($browserMock, $this->getMonologMock(), $this->config);
+        $uberallClient = new UberallClient($httpClientMock, $this->getLoggerMock(), $this->config);
         $this->assertEquals($this->token, $uberallClient->getAccessToken('my-email@my-website.com'));
     }
 
@@ -174,9 +174,9 @@ class UberallClientTest extends TestCase
     /**
      * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getBrowserMock()
+    protected function getHttpClientMock()
     {
-        return $this->getMockBuilder('Buzz\Browser')
+        return $this->getMockBuilder('Symfony\Contracts\HttpClient\HttpClientInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -184,9 +184,9 @@ class UberallClientTest extends TestCase
     /**
      * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getMonologMock()
+    protected function getLoggerMock()
     {
-        return $this->getMockBuilder('Monolog\Logger')
+        return $this->getMockBuilder('Psr\Log\LoggerInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -196,7 +196,7 @@ class UberallClientTest extends TestCase
      */
     protected function getResponseMock()
     {
-        return $this->getMockBuilder(Response::class)
+        return $this->getMockBuilder('Symfony\Contracts\HttpClient\ResponseInterface')
             ->disableOriginalConstructor()
             ->getMock();
     }

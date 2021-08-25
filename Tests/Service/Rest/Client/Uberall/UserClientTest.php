@@ -13,7 +13,7 @@ class UserClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\UserException');
         $this->expectExceptionMessage('Missing email on main contact.');
 
-        $userClient = new UserClient($this->getBrowserMock(), $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($this->getHttpClientMock(), $this->getLoggerMock(), $this->config);
         $userClient->getByEmail(null);
     }
 
@@ -24,13 +24,13 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getErrorJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('get')
             ->with($this->equalTo($this->config['base_url'] . '/api/users?query=' . $this->email))
             ->willReturn($responseMock);
 
-        $userClient = new UserClient($browserMock, $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($browserMock, $this->getLoggerMock(), $this->config);
         $this->assertNull($userClient->getByEmail($this->email));
     }
 
@@ -41,12 +41,12 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('get')
             ->willReturn($responseMock);
 
-        $userClient = new UserClient($browserMock, $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($browserMock, $this->getLoggerMock(), $this->config);
         $this->assertEquals($this->getUser(), $userClient->getByEmail($this->email));
     }
 
@@ -57,12 +57,12 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('get')
             ->willReturn($responseMock);
 
-        $userClient = new UserClient($browserMock, $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($browserMock, $this->getLoggerMock(), $this->config);
         $this->assertEquals($this->getUser(), $userClient->create($this->getUserProvider()));
     }
 
@@ -74,7 +74,7 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturn($this->getErrorJsonContent($message));
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('get')
             ->willReturn($responseMock);
@@ -86,7 +86,7 @@ class UserClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\UserException');
         $this->expectExceptionMessage(sprintf('Error on user creation : %s', $message));
 
-        $userClient = new UserClient($browserMock, $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($browserMock, $this->getLoggerMock(), $this->config);
         $userClient->create($this->getUserProvider());
     }
 
@@ -97,7 +97,7 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent(), $this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('get')
             ->willReturn($responseMock);
@@ -115,7 +115,7 @@ class UserClientTest extends UberallClientTest
             )
             ->willReturn($responseMock);
 
-        $loggerMock = $this->getMonologMock();
+        $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
             ->method('addInfo')
             ->with(sprintf('User %s successfully created', $this->email));
@@ -133,7 +133,7 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getErrorJsonContent($message));
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('delete')
             ->with($this->config['base_url'] . '/api/users/' . $id)
@@ -142,7 +142,7 @@ class UserClientTest extends UberallClientTest
         $this->expectException('Localfr\UberallBundle\Exception\UserException');
         $this->expectExceptionMessage(sprintf('Error on user deletion : %s', $message));
 
-        $userClient = new UserClient($browserMock, $this->getMonologMock(), $this->config);
+        $userClient = new UserClient($browserMock, $this->getLoggerMock(), $this->config);
         $userClient->remove($id);
     }
 
@@ -154,12 +154,12 @@ class UserClientTest extends UberallClientTest
             ->method('getContent')
             ->willReturnOnConsecutiveCalls($this->getSuccessJsonContent());
 
-        $browserMock = $this->getBrowserMock();
+        $browserMock = $this->getHttpClientMock();
         $browserMock->expects($this->once())
             ->method('delete')
             ->willReturn($responseMock);
 
-        $loggerMock = $this->getMonologMock();
+        $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
             ->method('addInfo')
             ->with(sprintf('User %d successfully deleted', $id));
