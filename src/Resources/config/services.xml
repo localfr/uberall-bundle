@@ -6,8 +6,8 @@
 
     <services>
         <service id="localfr.uberall.client.uberall_base" class="Localfr\UberallBundle\Service\Rest\Client\UberallClient" autowire="true">
-            <argument type="service" id="buzz" />
-            <argument type="service" id="localfr.uberall.monolog" />
+            <argument type="service" id="Symfony\Contracts\HttpClient\HttpClientInterface"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument>%uberall_api%</argument>
         </service>
         <service id="Localfr\UberallBundle\Service\Rest\Client\UberallClient" alias="localfr.uberall.client.uberall_base"/>
