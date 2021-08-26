@@ -44,6 +44,8 @@ class UserClient extends UberallClient
     public function create(UserProvider $userData)
     {
         if ($user = $this->getByEmail($userData->email)) {
+            $this->logger->addInfo(sprintf('User %s already exists', $user->email));
+
             return $user;
         }
 
