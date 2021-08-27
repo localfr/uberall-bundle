@@ -62,7 +62,7 @@ class UserClient extends UberallClient
         $content = $this->post('/api/users', $json);
 
         if ('SUCCESS' === $content->status) {
-            $this->logger->addInfo(sprintf('User %s successfully created', $content->response->user->email));
+            $this->logger->info(sprintf('User %s successfully created', $content->response->user->email));
 
             return $content->response->user;
         }
@@ -82,7 +82,7 @@ class UserClient extends UberallClient
     {
         $content = $this->delete('/api/users/' . $id);
         if ('SUCCESS' === $content->status) {
-            $this->logger->addInfo(sprintf('User %d successfully deleted', $id));
+            $this->logger->info(sprintf('User %d successfully deleted', $id));
 
             return;
         }

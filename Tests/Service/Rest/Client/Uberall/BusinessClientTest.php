@@ -43,7 +43,7 @@ class BusinessClientTest extends UberallClientTest
 
         $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Business %s already exists', $this->businessName));
 
         $businessClient = new BusinessClient($httpClientMock, $loggerMock, $this->config);
@@ -118,7 +118,7 @@ class BusinessClientTest extends UberallClientTest
 
         $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Business %s successfully created', $this->businessName));
 
         $businessClient = new BusinessClient($httpClientMock, $loggerMock, $this->config);

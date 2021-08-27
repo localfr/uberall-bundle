@@ -117,7 +117,7 @@ class UserClientTest extends UberallClientTest
 
         $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('User %s successfully created', $this->email));
 
         $userClient = new UserClient($browserMock, $loggerMock, $this->config);
@@ -161,7 +161,7 @@ class UserClientTest extends UberallClientTest
 
         $loggerMock = $this->getLoggerMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('User %d successfully deleted', $id));
 
         $userClient = new UserClient($browserMock, $loggerMock, $this->config);

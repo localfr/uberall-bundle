@@ -114,7 +114,7 @@ class LocationClientTest extends UberallClientTest
 
         $loggerMock = $this->getMonologMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Location %s already exists', $this->locationName));
 
         $locationClient = new LocationClient($httpClientMock, $loggerMock, $this->config);
@@ -182,7 +182,7 @@ class LocationClientTest extends UberallClientTest
 
         $loggerMock = $this->getMonologMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Location %s successfully created', $this->locationName));
 
         $locationClient = new LocationClient($httpClientMock, $loggerMock, $this->config);
@@ -244,7 +244,7 @@ class LocationClientTest extends UberallClientTest
 
         $loggerMock = $this->getMonologMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Status of location %d successfully modified (status %s)', $this->locationIdentifier, $status));
 
         $locationClient = new LocationClient($httpClientMock, $loggerMock, $this->config);
@@ -287,7 +287,7 @@ class LocationClientTest extends UberallClientTest
 
         $loggerMock = $this->getMonologMock();
         $loggerMock->expects($this->once())
-            ->method('addInfo')
+            ->method('info')
             ->with(sprintf('Location %d successfully deleted', $this->locationIdentifier));
 
         $locationClient = new LocationClient($browserMock, $loggerMock, $this->config);
