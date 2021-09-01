@@ -51,7 +51,7 @@ class LocationClient extends UberallClient
         if ($content->response->count > 0) {
             foreach ($content->response->locations as $location) {
                 if ($locationData->name == $location->name) {
-                    $this->logger->addInfo(sprintf('Location %s already exists', $location->name));
+                    $this->logger->info(sprintf('Location %s already exists', $location->name));
 
                     return $location;
                 }
@@ -76,7 +76,7 @@ class LocationClient extends UberallClient
 
         $postContent = $this->post('/api/locations', $json);
         if ('SUCCESS' === $postContent->status) {
-            $this->logger->addInfo(sprintf('Location %s successfully created', $postContent->response->location->name));
+            $this->logger->info(sprintf('Location %s successfully created', $postContent->response->location->name));
 
             return $postContent->response->location;
         }
@@ -95,7 +95,7 @@ class LocationClient extends UberallClient
     {
         $content = $this->patch('/api/locations/' . $id, json_encode(['status' => $status]));
         if ('SUCCESS' === $content->status) {
-            $this->logger->addInfo(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
+            $this->logger->info(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
 
             return;
         }
@@ -114,7 +114,7 @@ class LocationClient extends UberallClient
     {
         $content = $this->delete('/api/locations/' . $id);
         if ('SUCCESS' === $content->status) {
-            $this->logger->addInfo(sprintf('Location %d successfully deleted', $id));
+            $this->logger->info(sprintf('Location %d successfully deleted', $id));
 
             return;
         }
