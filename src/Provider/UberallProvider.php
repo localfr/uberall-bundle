@@ -74,11 +74,12 @@ abstract class UberallProvider implements \ArrayAccess
     /**
      * @param string $offset
      * @param $value
-     * @return self
+     *
+     * @return void
      */
-    public function __set($offset, $value): self
+    public function __set($offset, $value): void
     {
-        return $this->offsetSet($offset, $value);
+        $this->offsetSet($offset, $value);
     }
 
     /**
