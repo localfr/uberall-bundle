@@ -2,6 +2,6 @@
 
 namespace Localfr\UberallBundle\Exception;
 
-class LocationException extends \Exception
+class LocationException extends BaseException
 {
 }

@@ -2,10 +2,7 @@
 
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
-use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\Exception\UserException;
-
-class Uberall extends UberallClient
+class UberallClient
 {
     /**
      * @var UserClient
@@ -23,36 +20,18 @@ class Uberall extends UberallClient
     private $businessClient;
 
     /**
-     * @param string $connectedUserEmail
-     * @param string|null $email
-     *
-     * @return string
-     * @throws UserException
-     * @throws \Exception
+     * @param BusinessClient $businessClient
+     * @param LocationClient $locationClient
+     * @param UserClient $userClient
      */
-    public function getAutologinUrl($connectedUserEmail, $email = null): string
-    {
-        if (empty($connectedUserEmail)) {
-            throw new UserException('Connected user has not email.');
-        }
-        $user = $this->userClient->getByEmail($connectedUserEmail);
-
-        if (isset($email)) {
-            $client = $this->userClient->getByEmail($email);
-        } else {
-            $client = $user;
-        }
-
-        if ($user && $client && count($client->managedLocations)) {
-            return sprintf(
-                '%s/fr/app/localfr/locationEdit/%s?access_token=%s',
-                $this->getBaseUrl(),
-                $client->managedLocations[0],
-                $this->getAccessToken($connectedUserEmail)
-            );
-        }
-
-        throw new UserException(sprintf('User %s not exist in Uberall.', $connectedUserEmail));
+    public function __construct(
+        BusinessClient $businessClient,
+        LocationClient $locationClient,
+        UserClient $userClient
+    ) {
+        $this->businessClient = $businessClient;
+        $this->locationClient = $locationClient;
+        $this->userClient = $userClient;
     }
 
     /**

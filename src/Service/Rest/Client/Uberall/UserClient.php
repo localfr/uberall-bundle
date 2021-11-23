@@ -2,93 +2,173 @@
 
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
-use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\Provider\UserProvider as UserProvider;
+use Localfr\UberallBundle\Component\Response\UberallResponse;
+use Localfr\UberallBundle\Entity\User;
+use Localfr\UberallBundle\Entity\UberallResponse\{
+    UsersResponse,
+    UserResponse,
+    UberallGenericResponse
+};
 use Localfr\UberallBundle\Exception\UserException;
-use Symfony\Component\HttpFoundation\Response;
+use Localfr\UberallBundle\Service\Rest\QueryParams\Uberall\UsersQueryParams;
 
-class UserClient extends UberallClient
+class UserClient extends AbstractUberallClient
 {
     /**
-     * @param string $email
-     *
-     * @return mixed the uberall user if exists, null otherwise
-     * @throws UserException
+     * @var string
      */
-    public function getByEmail($email)
+    private const ENTITY = 'users';
+
+    /**
+     * @param int $userId
+     *
+     * @return UberallResponse
+     */
+    public function getUser(int $userId): UberallResponse
     {
-        if (empty($email)) {
-            throw new UserException('Missing email on main contact.');
+        $service = sprintf('/api/%s/%d', self::ENTITY, $userId);
+        $esponseEntity = UserResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $esponseEntity = UberallGenericResponse::class;
         }
 
-        $content = $this->get('/api/users?query=' . $email);
-        if ('SUCCESS' === $content->status && $content->response && 0 !== $content->response->count) {
-            // We must verify all results because uberall user search is not strict like the 'LIKE %search%' in SQL
-            foreach ($content->response->users as $user) {
-                if ($email === $user->email) {
-                    return $user;
-                }
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $esponseEntity
+        );
+    }
+
+    /**
+     * @param UsersQueryParams $queryParams
+     * @return UberallResponse
+     */
+    public function getUsers(UsersQueryParams $queryParams): UberallResponse
+    {
+        $validation = $this->validatePayload($queryParams);
+        if (null !== $validation) {
+            $this->logger->error('User query parameters validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new UserException('User query parameters validation failed.', 0, $validation);
+        }
+
+        $service = sprintf('/api/%s?%s', self::ENTITY, \http_build_query($queryParams));
+        $responseEntity = UsersResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+        }
+
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
+    }
+
+    /**
+     * @param User $newUser
+     * @param bool $throw
+     *
+     * @return UberallResponse
+     *
+     * @throws UserException
+     */
+    public function create(User $newUser, bool $throw = true): UberallResponse
+    {
+        $validation = $this->validatePayload($newUser);
+        if (null !== $validation) {
+            $this->logger->error('New user validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new UserException('New user validation failed.', 0, $validation);
+        }
+
+        $json = $this->serializer->serialize(
+            $newUser,
+            [
+                'skip_null_values' => true
+            ]
+        );
+
+        $service = sprintf('/api/%s', self::ENTITY);
+        $entityResponse = UserResponse::class;
+        $response = $this->post($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $entityResponse = UberallGenericResponse::class;
+            $data = $response->toArray(false);
+            $this->logger->error(sprintf('Error while creating user with email=%s.', $newUser->getEmail()));
+            if (true === $throw) {
+                throw new UserException(
+                    'Error while creating user.',
+                    0,
+                    ["responseData" => $data]
+                );
             }
         }
 
-        return null;
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $entityResponse
+        );
     }
 
     /**
-     * @param UserProvider $userData previously collected from salesforce
-     *
-     * @return mixed
-     *
-     * @throws UserException
-     */
-    public function create(UserProvider $userData)
-    {
-        if ($user = $this->getByEmail($userData->email)) {
-            return $user;
-        }
-
-        $json = json_encode([
-            'email' => $userData->email,
-            "firstname" => $userData->firstname ?: '.',
-            "lastname" => $userData->lastname,
-            'whitelabelInformationIdentifier' => $userData->whitelabelInformationIdentifier ?: 'localfr',
-            'managedLocations' => $userData->managedLocations,
-            'password' => bin2hex(openssl_random_pseudo_bytes(10)),
-            'preferredLanguage' => $userData->preferredLanguage ?: 'FR',
-            'role' => $userData->role ?: 'LOCATION_MANAGER',
-            'status' => $userData->status ?: 'VERIFIED',
-        ]);
-
-        $content = $this->post('/api/users', $json);
-
-        if ('SUCCESS' === $content->status) {
-            $this->logger->info(sprintf('User %s successfully created', $content->response->user->email));
-
-            return $content->response->user;
-        }
-
-        $message = $content->message ?? var_export($content, true);
-
-        throw new UserException(sprintf('Error on user creation : %s', $message), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * @param string $id userId to remove
+     * @param int $id uberall userId to update
+     * @param User $user
+     * @param bool $throw
      *
      * @return void
      * @throws UserException
      */
-    public function remove($id)
+    public function update(int $id, User $user, bool $throw = true): UberallResponse
     {
-        $content = $this->delete('/api/users/' . $id);
-        if ('SUCCESS' === $content->status) {
-            $this->logger->info(sprintf('User %d successfully deleted', $id));
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $responseEntity = UserResponse::class;
+        $json = $this->serializer->serialize(
+            $user,
+            [
+                'skip_null_values' => true
+            ]
+        );
 
-            return;
+        $response = $this->patch($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+            $this->logger->warning(sprintf('User %d update failed, payload=%s', $id, $json));
+            if (true === $throw) {
+                throw new UserException(
+                    'User update failed.',
+                    0,
+                    array_merge(["id" => $id], $response->toArray(false))
+                );
+            }
+        } else {
+            $this->logger->info(sprintf('User %d sucessfully updated, payload=%s', $id, $json));
         }
 
-        $message = $content->message ?? var_export($content, true);
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
+    }
 
-        throw new UserException(sprintf('Error on user deletion : %s', $message), Response::HTTP_INTERNAL_SERVER_ERROR);
+    /**
+     * @param int $id uberall userId to remove
+     *
+     * @return UberallResponse
+     */
+    public function remove(int $id): UberallResponse
+    {
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $response = $this->delete($service);
+        
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            UberallGenericResponse::class
+        );
     }
 }

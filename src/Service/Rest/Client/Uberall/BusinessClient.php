@@ -2,73 +2,174 @@
 
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
-use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\Provider\BusinessProvider as BusinessProvider;
+use Localfr\UberallBundle\Component\Response\UberallResponse;
+use Localfr\UberallBundle\Entity\Business;
+use Localfr\UberallBundle\Entity\UberallResponse\{
+    BusinessesResponse,
+    BusinessResponse,
+    UberallGenericResponse
+};
 use Localfr\UberallBundle\Exception\BusinessException;
-use Symfony\Component\HttpFoundation\Response;
+use Localfr\UberallBundle\Service\Rest\QueryParams\Uberall\BusinessesQueryParams;
 
-class BusinessClient extends UberallClient
+
+class BusinessClient extends AbstractUberallClient
 {
     /**
-     * @param BusinessProvider $businessData
+     * @var string
+     */
+    private const ENTITY = 'businesses';
+
+    /**
+     * @param int $businessId
      *
-     * @return mixed
+     * @return UberallResponse
+     */
+    public function getBusiness(int $businessId): UberallResponse
+    {
+        $service = sprintf('/api/%s/%d', self::ENTITY, $businessId);
+        $entityResponse = BusinessResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $entityResponse = UberallGenericResponse::class;
+        }
+
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $entityResponse
+        );
+    }
+
+    /**
+     * @param BusinessesQueryParams $queryParams
+     * @return UberallResponse
+     */
+    public function getBusinesses(BusinessesQueryParams $queryParams): UberallResponse
+    {
+        $validation = $this->validatePayload($queryParams);
+        if (null !== $validation) {
+            $this->logger->error('Business query parameters validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new BusinessException('Business query parameters validation failed.', 0, $validation);
+        }
+
+        $service = sprintf('/api/%s?%s', self::ENTITY, \http_build_query($queryParams));
+        $responseEntity = BusinessesResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+        }
+
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
+    }
+
+    /**
+     * @param Business $newBusiness
+     * @param bool $throw
+     *
+     * @return UberallResponse
      *
      * @throws BusinessException
      */
-    public function create(BusinessProvider $businessData)
+    public function create(Business $newBusiness, bool $throw = true): UberallResponse
     {
-        $content = $this->get('/api/businesses/?query=' . $businessData->name);
-        if (!$content || 'SUCCESS' !== $content->status || !$content->response) {
-            throw new BusinessException('Error while calling Uberall business API.');
+        $validation = $this->validatePayload($newBusiness);
+        if (null !== $validation) {
+            $this->logger->error('New business validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new BusinessException('New business validation failed.', 0, $validation);
         }
 
-        if ($content->response->count > 0) {
-            foreach ($content->response->businesses as $business) {
-                if ($businessData->name == $business->name) {
-                    $this->logger->info(sprintf('Business %s already exists', $business->name));
+        $json = $this->serializer->serialize(
+            $newBusiness,
+            [
+                'skip_null_values' => true
+            ]
+        );
 
-                    return $business;
-                }
+        $service = sprintf('/api/%s', self::ENTITY);
+        $entityResponse = BusinessResponse::class;
+        $response = $this->post($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $entityResponse = UberallGenericResponse::class;
+            $data = $response->toArray(false);
+            $this->logger->error(sprintf('Error while creating business with name=%s.', $newBusiness->getName()));
+            if (true === $throw) {
+                throw new BusinessException(
+                    'Error while creating business.',
+                    0,
+                    ["responseData" => $data]
+                );
             }
         }
 
-        $json = json_encode([
-            'name' => $businessData->name,
-            'streetAndNo' => $businessData->streetAndNo ?: '.',
-            'zip' => $businessData->zip,
-            'city' => $businessData->city ?: '.',
-            'phone' => $businessData->phone,
-            'country' => $businessData->country ?: 'FR',
-        ]);
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $entityResponse
+        );
+    }
 
-        $postContent = $this->post('/api/businesses', $json);
-        if ('SUCCESS' === $postContent->status) {
-            $this->logger->info(sprintf('Business %s successfully created', $postContent->response->business->name));
+    /**
+     * @param int $id uberall businessId to update
+     * @param Business $business
+     * @param bool $throw
+     *
+     * @return void
+     * @throws BusinessException
+     */
+    public function update(int $id, Business $business, bool $throw = true): UberallResponse
+    {
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $responseEntity = BusinessResponse::class;
+        $json = $this->serializer->serialize(
+            $business,
+            [
+                'skip_null_values' => true
+            ]
+        );
 
-            return $postContent->response->business;
+        $response = $this->patch($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+            $this->logger->warning(sprintf('Business %d update failed, payload=%s', $id, $json));
+            if (true === $throw) {
+                throw new BusinessException(
+                    'Business update failed.',
+                    0,
+                    array_merge(["id" => $id], $response->toArray(false))
+                );
+            }
+        } else {
+            $this->logger->info(sprintf('Business %d sucessfully updated, payload=%s', $id, $json));
         }
 
-        throw new BusinessException(sprintf('Error on business creation : %s', $postContent->message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
     }
 
     /**
      * @param int $id uberall businessId to remove
      *
-     * @return void
-     * @throws BusinessException
+     * @return UberallResponse
      */
-    public function remove($id)
+    public function remove(int $id): UberallResponse
     {
-        $content = $this->delete('/api/businesses/' . $id);
-        if ('SUCCESS' === $content->status) {
-            $this->logger->info(sprintf('Business %d successfully deleted', $id));
-
-            return;
-        }
-
-        $message = $content->message ?? var_export($content, true);
-
-        throw new BusinessException(sprintf('Error on business deletion : %s', $message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $response = $this->delete($service);
+        
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            UberallGenericResponse::class
+        );
     }
 }

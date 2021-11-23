@@ -17,15 +17,11 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('uberall_api');
+        $treeBuilder = new TreeBuilder('localfr_uberall');
         $treeBuilder->getRootNode()
             ->children()
                 ->scalarNode('base_url')->isRequired()->end()
                 ->scalarNode('private_key')->isRequired()->end()
-                ->scalarNode('public_key')->isRequired()->end()
-                ->scalarNode('white_label')->isRequired()->end()
-                ->scalarNode('login_api')->isRequired()->end()
-                ->scalarNode('location_edit_link')->isRequired()->end()
             ->end();
 
         return $treeBuilder;

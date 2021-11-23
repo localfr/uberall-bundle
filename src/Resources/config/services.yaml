@@ -1,0 +1,37 @@
+services:
+    _defaults:
+        autowire: true      
+        autoconfigure: true 
+        public: false
+
+    localfr.uberall.abstract_client:
+        class: Localfr\UberallBundle\Service\Rest\Client\Uberall\AbstractUberallClient
+        abstract: true
+        arguments:
+            $serializer: '@localfr.uberall.serializer'
+    
+    localfr.uberall.business_client:
+        class: Localfr\UberallBundle\Service\Rest\Client\Uberall\BusinessClient
+        parent: 'localfr.uberall.abstract_client'
+    
+    localfr.uberall.location_client:
+        class: Localfr\UberallBundle\Service\Rest\Client\Uberall\LocationClient
+        parent: 'localfr.uberall.abstract_client'
+    
+    localfr.uberall.user_client:
+        class: Localfr\UberallBundle\Service\Rest\Client\Uberall\UserClient
+        parent: 'localfr.uberall.abstract_client'
+    
+    localfr.uberall.client:
+        class: Localfr\UberallBundle\Service\Rest\Client\Uberall\UberallClient
+        public: true
+        arguments:
+            $businessClient: '@localfr.uberall.business_client'
+            $locationClient: '@localfr.uberall.location_client'
+            $userClient: '@localfr.uberall.user_client'
+    
+    localfr.uberall.serializer:
+        class: Localfr\UberallBundle\Component\Serializer\UberallSerializer
+        public: true
+        arguments:
+            $annotationsCacheAdapter: '@annotations.cache_adapter'
