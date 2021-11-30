@@ -9,6 +9,8 @@ services:
         abstract: true
         arguments:
             $serializer: '@localfr.uberall.serializer'
+            $baseUrl: '%localfr_uberall.config.base_url%'
+            $privateKey: '%localfr_uberall.config.private_key%'
     
     localfr.uberall.business_client:
         class: Localfr\UberallBundle\Service\Rest\Client\Uberall\BusinessClient

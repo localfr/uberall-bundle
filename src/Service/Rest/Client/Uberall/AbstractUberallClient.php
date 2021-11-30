@@ -41,6 +41,16 @@ abstract class AbstractUberallClient
     /**
      * @var string
      */
+    protected $baseUrl;
+
+    /**
+     * @var string
+     */
+    protected $privateKey;
+
+    /**
+     * @var string
+     */
     private $accessToken;
 
     /**
@@ -58,19 +68,25 @@ abstract class AbstractUberallClient
      * @param ContainerInterface $container
      * @param UberallSerializer $serializer
      * @param ValidatorInterface $validator
+     * @param string $baseUrl
+     * @param string $privateKey
      */
     public function __construct(
         HttpClientInterface $httpClient,
         LoggerInterface $logger,
         ContainerInterface $container,
         UberallSerializer $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        string $baseUrl,
+        string $privateKey
     ) {
         $this->httpClient = $httpClient;
         $this->logger = $logger;
         $this->container = $container;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->baseUrl = $baseUrl;
+        $this->privateKey = $privateKey;
     }
 
     /**
@@ -81,7 +97,7 @@ abstract class AbstractUberallClient
      */
     public function get(string $service, array $headers = []): ResponseInterface
     {
-        return $this->httpClient->request('GET', $this->getBaseUrl() . $service,
+        return $this->httpClient->request('GET', $this->baseUrl . $service,
             [
                 'headers' => array_merge($this->getDefaultHeaders(), $headers)
             ]
@@ -97,7 +113,7 @@ abstract class AbstractUberallClient
      */
     public function post(string $service, $json, array $headers = []): ResponseInterface
     {
-        return $this->httpClient->request('POST', $this->getBaseUrl() . $service,
+        return $this->httpClient->request('POST', $this->baseUrl . $service,
             [
                 'headers' => array_merge($this->getDefaultHeaders(), $headers),
                 'body' => $json
@@ -113,7 +129,7 @@ abstract class AbstractUberallClient
      */
     public function delete(string $service, array $headers = []): ResponseInterface
     {
-        return $this->httpClient->request('DELETE', $this->getBaseUrl() . $service,
+        return $this->httpClient->request('DELETE', $this->baseUrl . $service,
             [
                 'headers' => array_merge($this->getDefaultHeaders(), $headers)
             ]
@@ -129,7 +145,7 @@ abstract class AbstractUberallClient
      */
     public function patch(string $service, $json, $headers = []): ResponseInterface
     {
-        return $this->httpClient->request('PATCH', $this->getBaseUrl() . $service,
+        return $this->httpClient->request('PATCH', $this->baseUrl . $service,
             [
                 'headers' => array_merge($this->getDefaultHeaders(), $headers),
                 'body' => $json
@@ -142,7 +158,7 @@ abstract class AbstractUberallClient
      */
     public function getBaseUrl(): string
     {
-        return $this->getConfig('base_url');
+        return $this->baseUrl;
     }
 
     /**
@@ -196,25 +212,9 @@ abstract class AbstractUberallClient
         return array_merge(
             self::REQUEST_HEADERS,
             [
-                'privateKey' => $this->getConfig('private_key')
+                'privateKey' => $this->privateKey
             ]
         );
-    }
-
-    /**
-     * @param string $offset
-     *
-     * @return null|string|array
-     */
-    private function getConfig(?string $offset = null)
-    {
-        $config = $this->container->getParameter('localfr_uberall_config');
-
-        if (null === $offset) {
-            return $config;
-        }
-
-        return $config[$offset] ?? null;
     }
 
     /**

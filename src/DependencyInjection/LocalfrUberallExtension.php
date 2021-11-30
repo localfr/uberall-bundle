@@ -37,6 +37,7 @@ class LocalfrUberallExtension extends Extension
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $container->setParameter('localfr_uberall_config', $config);
+        $container->setParameter('localfr_uberall.config.base_url', $config['base_url']);
+        $container->setParameter('localfr_uberall.config.private_key', $config['private_key']);
     }
 }
