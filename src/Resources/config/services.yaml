@@ -4,6 +4,13 @@ services:
         autoconfigure: true 
         public: false
 
+    Localfr\UberallBundle\:
+        resource: '../../'
+        exclude:
+        - '../../DependencyInjection/'
+        - '../../Resources/'
+        - '../../Tests/'
+
     localfr.uberall.abstract_client:
         class: Localfr\UberallBundle\Service\Rest\Client\Uberall\AbstractUberallClient
         abstract: true
