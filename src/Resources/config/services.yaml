@@ -4,13 +4,6 @@ services:
         autoconfigure: true 
         public: false
 
-    Localfr\UberallBundle\:
-        resource: '../../'
-        exclude:
-        - '../../DependencyInjection/'
-        - '../../Resources/'
-        - '../../Tests/'
-
     localfr.uberall.abstract_client:
         class: Localfr\UberallBundle\Service\Rest\Client\Uberall\AbstractUberallClient
         abstract: true
@@ -44,3 +37,5 @@ services:
         public: true
         arguments:
             $annotationsCacheAdapter: '@annotations.cache_adapter'
+
+    Localfr\UberallBundle\Service\Rest\Client\Uberall\UberallClient: '@localfr.uberall.client'
