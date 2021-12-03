@@ -64,13 +64,13 @@ class User extends UberallEntityBase
     private $lastname;
 
     /**
-     * @var Collection|Business[]
+     * @var Collection|int[]
      * @Assert\Type("Doctrine\Common\Collections\ArrayCollection")
      */
     private $managedBusinesses;
 
     /**
-     * @var Collection|Location[]
+     * @var Collection|int[]
      * @Assert\Type("Doctrine\Common\Collections\ArrayCollection")
      */
     private $managedLocations;
@@ -381,7 +381,7 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @return Collection|Business[]|null
+     * @return Collection|int[]|null
      */
     public function getManagedBusinesses(): ?Collection
     {
@@ -389,11 +389,11 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @param Business $managedBusiness
+     * @param int $managedBusiness
      *
      * @return self
      */
-    public function addManagedBusiness(Business $managedBusiness): self
+    public function addManagedBusiness(int $managedBusiness): self
     {
         if (null === $this->managedBusinesses) {
             $this->managedBusinesses = new ArrayCollection();
@@ -406,11 +406,11 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @param Business $managedBusiness
+     * @param int $managedBusiness
      *
      * @return self
      */
-    public function removeManagedBusiness(Business $managedBusiness): self
+    public function removeManagedBusiness(int $managedBusiness): self
     {
         if (null === $this->managedBusinesses) {
             return $this;
@@ -423,7 +423,7 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @return Collection|Location[]|null
+     * @return Collection|int[]|null
      */
     public function getManagedLocations(): ?Collection
     {
@@ -431,11 +431,11 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @param Location $managedLocation
+     * @param int $managedLocation
      *
      * @return self
      */
-    public function addManagedLocation(Location $managedLocation): self
+    public function addManagedLocation(int $managedLocation): self
     {
         if (null === $this->managedLocations) {
             $this->managedLocations = new ArrayCollection();
@@ -448,11 +448,11 @@ class User extends UberallEntityBase
     }
 
     /**
-     * @param Location $managedLocation
+     * @param int $managedLocation
      *
      * @return self
      */
-    public function removeManagedLocation(Location $managedLocation): self
+    public function removeManagedLocation(int $managedLocation): self
     {
         if (null === $this->managedLocations) {
             return $this;
