@@ -175,8 +175,12 @@ class UserClient extends AbstractUberallClient
     /**
      * @param string $email
      * @param bool $throw
+     *
+     * @return UberallResponse
+     *
+     * @throws UserException
      */
-    public function generateAccessToken(string $email, bool $throw = true)
+    public function generateAccessToken(string $email, bool $throw = true): UberallResponse
     {
         $service = sprintf('/api/%s/login', self::ENTITY);
         $user = new User(["email" => $email]);
