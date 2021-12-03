@@ -171,4 +171,49 @@ class UserClient extends AbstractUberallClient
             UberallGenericResponse::class
         );
     }
+
+    /**
+     * @param string $email
+     * @param bool $throw
+     */
+    public function generateAccessToken(string $email, bool $throw = true)
+    {
+        $service = sprintf('/api/%s/login', self::ENTITY);
+        $user = new User(["email" => $email]);
+
+        $json = $this->serializer->serialize(
+            $user,
+            [
+                'skip_null_values' => true
+            ]
+        );
+
+        $response = $this->post($service, $json);
+
+        if (200 !== $response->getStatusCode()) {
+            $data = $response->toArray(false);
+            $this->logger->error(
+                sprintf(
+                    'Error while generating access_token for user %s.',
+                    $email
+                )
+            );
+            if (true === $throw) {
+                throw new UserException(
+                    sprintf(
+                        'Error while generating access_token for user %s.',
+                        $email
+                    ),
+                    0,
+                    ["responseData" => $data]
+                );
+            }
+        }
+
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            UberallGenericResponse::class
+        );
+    }
 }
