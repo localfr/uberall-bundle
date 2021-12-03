@@ -164,4 +164,32 @@ class LocationsQueryParams
      * @Assert\Type("bool")
      */
     public $syncStarted;
+
+    /**
+     * @param array $payload
+     */
+    public function __construct(array $payload = [])
+    {
+        $this->businessId = $payload['businessId'] ?? null;
+        $this->classification = $payload['classification'] ?? null;
+        $this->endDateMax = $payload['endDateMax'] ?? null;
+        $this->endDateMin = $payload['endDateMin'] ?? null;
+        $this->excludedLocationIds = $payload['excludedLocationIds'] ?? null;
+        $this->facebookStatus = $payload['facebookStatus'] ?? null;
+        $this->fieldMask = $payload['fieldMask'] ?? null;
+        $this->googleStatus = $payload['googleStatus'] ?? null;
+        $this->identifier = $payload['identifier'] ?? null;
+        $this->labels = $payload['labels'] ?? null;
+        $this->locationIds = $payload['locationIds'] ?? null;
+        $this->max = $payload['max'] ?? null;
+        $this->needsReview = $payload['needsReview'] ?? null;
+        $this->offset = $payload['offset'] ?? 0;
+        $this->order = $payload['order'] ?? 'asc';
+        $this->query = $payload['query'] ?? null;
+        $this->selectAll = $payload['selectAll'] ?? null;
+        $this->sort = $payload['sort'] ?? null;
+        $this->status = $payload['status'] ?? null;
+        $this->syncNeeded = $payload['syncNeeded'] ?? null;
+        $this->syncStarted = $payload['syncStarted'] ?? null;
+    }
 }

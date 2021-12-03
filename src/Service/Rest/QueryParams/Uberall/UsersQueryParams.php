@@ -45,4 +45,18 @@ class UsersQueryParams
      * @var string
      */
     public $sort;
+
+    /**
+     * @param array $payload
+     */
+    public function __construct(array $payload = [])
+    {
+        $this->identifier = $payload['identifier'] ?? null;
+        $this->locationId = $payload['locationId'] ?? null;
+        $this->max = $payload['max'] ?? null;
+        $this->offset = $payload['offset'] ?? 0;
+        $this->order = $payload['order'] ?? 'asc';
+        $this->query = $payload['query'] ?? null;
+        $this->sort = $payload['sort'] ?? null;
+    }
 }

@@ -79,4 +79,21 @@ class BusinessesQueryParams
      * @Assert\Choice(choices=BusinessesQueryParams::STATUS)
      */
     public $status;
+
+    /**
+     * @param array $payload
+     */
+    public function __construct(array $payload = [])
+    {
+        $this->businessIds = $payload['businessIds'] ?? null;
+        $this->fieldMask = $payload['fieldMask'] ?? null;
+        $this->googleStatus = $payload['googleStatus'] ?? null;
+        $this->identifier = $payload['identifier'] ?? null;
+        $this->max = $payload['max'] ?? null;
+        $this->maxLocations = $payload['maxLocations'] ?? null;
+        $this->minLocations = $payload['minLocations'] ?? null;
+        $this->offset = $payload['offset'] ?? 0;
+        $this->query = $payload['query'] ?? null;
+        $this->sort = $payload['sort'] ?? null;
+    }
 }
