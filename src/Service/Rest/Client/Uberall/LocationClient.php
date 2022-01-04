@@ -119,7 +119,7 @@ class LocationClient extends AbstractUberallClient
      * @param Location $location
      * @param bool $throw
      *
-     * @return void
+     * @return UberallResponse
      * @throws LocationException
      */
     public function update(int $id, Location $location, bool $throw = true): UberallResponse

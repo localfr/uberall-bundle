@@ -37,7 +37,7 @@ class BusinessObjectResponse
     /**
      * @var Business
      */
-    private $location;
+    private $business;
 
     /**
      * @var Collection|array[]
@@ -57,7 +57,7 @@ class BusinessObjectResponse
      */
     public function __construct(?array $payload = [])
     {
-        $this->location = $payload['location'] ?? null;
+        $this->location = $payload['business'] ?? null;
 
         $this->suggestionsForFields = null;
         if (array_key_exists('suggestionsForFields', $payload) && is_array($payload['suggestionsForFields'] && !empty($payload['suggestionsForFields']))) {
@@ -74,17 +74,17 @@ class BusinessObjectResponse
      */
     public function getBusiness(): ?Business
     {
-        return $this->location;
+        return $this->business;
     }
 
     /**
-     * @param Business|null $location
+     * @param Business|null $business
      * 
      * @return self
      */
-    public function setBusiness(?Business $location): self
+    public function setBusiness(?Business $business): self
     {
-        $this->location = $location;
+        $this->business = $business;
         return $this;
     }
 
