@@ -655,7 +655,7 @@ class Location extends UberallEntityBase
     }
 
     /**
-     * @return Collection\AttributeWrapper[]|null
+     * @return Collection|AttributeWrapper[]|null
      */
     public function getAttributes(): ?Collection
     {
