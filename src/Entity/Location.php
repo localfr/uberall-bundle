@@ -70,6 +70,11 @@ class Location extends UberallEntityBase
      */
     private $city;
 
+    /**
+     * @var string
+     */
+    private $cleansingComment;
+
     /** @var string */
     private $cleansingInvalidDataReason;
 
@@ -407,6 +412,7 @@ class Location extends UberallEntityBase
 
         $this->cellphone = $payload['cellphone'] ?? null;
         $this->city = $payload['city'] ?? null;
+        $this->cleansingComment = $payload['cleansingComment'] ?? null;
         $this->cleansingInvalidDataReason = $payload['cleansingInvalidDataReason'] ?? null;
         
         $this->contentLists = null;
@@ -854,6 +860,24 @@ class Location extends UberallEntityBase
     public function setCity(?string $city): self
     {
         $this->city = $city;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCleansingComment(): ?string
+    {
+        return $this->cleansingComment;
+    }
+
+    /**
+     * @param string|null $cleansingComment
+     * @return self
+     */
+    public function setCleansingComment(?string $cleansingComment): self
+    {
+        $this->cleansingComment = $cleansingComment;
         return $this;
     }
 

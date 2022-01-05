@@ -3,6 +3,7 @@
 namespace Localfr\UberallBundle\Component\Serializer;
 
 use Doctrine\Common\Annotations\{AnnotationReader, PsrCachedReader};
+use Localfr\UberallBundle\Component\Serializer\Normalizer\ArrayOrNullDenormalizer;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -22,7 +23,6 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\Normalizer\{
     AbstractNormalizer,
-    ArrayDenormalizer,
     ConstraintViolationListNormalizer,
     DateIntervalNormalizer,
     DateTimeNormalizer,
@@ -60,7 +60,7 @@ class UberallSerializer
         );
         $this->serializer = new Serializer(
             [
-                new ArrayDenormalizer(),
+                new ArrayOrNullDenormalizer(),
                 new ConstraintViolationListNormalizer(),
                 new DateIntervalNormalizer(),
                 new DateTimeNormalizer(),
@@ -120,7 +120,7 @@ class UberallSerializer
             'json',
             array_merge(
                 [
-                    AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => true,
+                    AbstractNormalizer::ALLOW_EXTRA_ATTRIBUTES => true
                 ],
                 $context
             )
