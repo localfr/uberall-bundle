@@ -1,0 +1,3 @@
+localfr_uberall:
+    base_url: 'base_url'
+    private_key: 'private_key'

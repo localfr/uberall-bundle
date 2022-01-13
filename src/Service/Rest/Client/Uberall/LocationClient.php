@@ -2,124 +2,173 @@
 
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
-use Localfr\UberallBundle\Service\Rest\Client\UberallClient;
-use Localfr\UberallBundle\Provider\LocationProvider;
+use Localfr\UberallBundle\Component\Response\UberallResponse;
+use Localfr\UberallBundle\Entity\Location;
+use Localfr\UberallBundle\Entity\UberallResponse\{
+    LocationsResponse,
+    LocationResponse,
+    UberallGenericResponse
+};
 use Localfr\UberallBundle\Exception\LocationException;
-use Symfony\Component\HttpFoundation\Response;
+use Localfr\UberallBundle\Service\Rest\QueryParams\Uberall\LocationsQueryParams;
 
-class LocationClient extends UberallClient
+class LocationClient extends AbstractUberallClient
 {
     /**
-     * @param $locationId
-     *
-     * @return mixed
+     * @var string
      */
-    public function getLocation($locationId)
-    {
-        $content = $this->get('/api/locations/' . $locationId);
-
-        return $content->response->location ?? null;
-    }
+    private const ENTITY = 'locations';
 
     /**
-     * @return array
+     * @param int $locationId
+     *
+     * @return UberallResponse
      */
-    public function getLocations(int $maxLocations = 50000)
+    public function getLocation(int $locationId): UberallResponse
     {
-        $content = $this->get('/api/locations?max=' . $maxLocations);
-        if ('SUCCESS' === $content->status && $content->response && 0 !== $content->response->count) {
-            return $content->response->locations;
+        $service = sprintf('/api/%s/%d', self::ENTITY, $locationId);
+        $esponseEntity = LocationResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $esponseEntity = UberallGenericResponse::class;
         }
 
-        return [];
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $esponseEntity
+        );
     }
 
     /**
-     * @param array LocationProvider $locationData
+     * @param LocationsQueryParams $queryParams
+     * @return UberallResponse
+     */
+    public function getLocations(LocationsQueryParams $queryParams): UberallResponse
+    {
+        $validation = $this->validatePayload($queryParams);
+        if (null !== $validation) {
+            $this->logger->error('Location query parameters validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new LocationException('Location query parameters validation failed.', 0, $validation);
+        }
+
+        $service = sprintf('/api/%s?%s', self::ENTITY, \http_build_query($queryParams));
+        $responseEntity = LocationsResponse::class;
+        $response = $this->get($service);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+        }
+
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
+    }
+
+    /**
+     * @param Location $newLocation
+     * @param bool $throw
      *
-     * @return mixed
+     * @return UberallResponse
      *
      * @throws LocationException
      */
-    public function create(LocationProvider $locationData)
+    public function create(Location $newLocation, bool $throw = true): UberallResponse
     {
-        $content = $this->get('/api/locations?identifier=' . $locationData->identifier);
-        if (!$content || 'SUCCESS' !== $content->status) {
-            throw new LocationException('Error while calling Uberall location API.');
+        $validation = $this->validatePayload($newLocation);
+        if (null !== $validation) {
+            $this->logger->error('New location validation failed.');
+            $this->logger->error(var_export($validation, true));
+            throw new LocationException('New location validation failed.', 0, $validation);
         }
 
-        if ($content->response->count > 0) {
-            foreach ($content->response->locations as $location) {
-                if ($locationData->name == $location->name) {
-                    $this->logger->info(sprintf('Location %s already exists', $location->name));
+        $json = $this->serializer->serialize(
+            $newLocation,
+            [
+                'skip_null_values' => true
+            ]
+        );
 
-                    return $location;
-                }
+        $service = sprintf('/api/%s', self::ENTITY);
+        $entityResponse = LocationResponse::class;
+        $response = $this->post($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $entityResponse = UberallGenericResponse::class;
+            $data = $response->toArray(false);
+            $this->logger->error(sprintf('Error while creating location with name=%s.', $newLocation->getName()));
+            if (true === $throw) {
+                throw new LocationException(
+                    'Error while creating location.',
+                    0,
+                    ["responseData" => $data]
+                );
             }
         }
 
-        $json = json_encode([
-            'identifier' => $locationData->identifier,
-            'name' => $locationData->name,
-            'street' => $locationData->street ?: '.',
-            'city' => $locationData->city ?: '.',
-            'zip' => $locationData->zip,
-            'phone' => $locationData->phone,
-            'businessId' => $locationData->businessId,
-            'status' => $locationData->status ?: 'ACTIVE',
-            'country' => $locationData->country ?: 'FR',
-            'autoSync' => $locationData->autoSync ?: 'true',
-            'website' => $locationData->website,
-            'email' => $locationData->email,
-            'legalIdent' => $locationData->legalIdent
-        ]);
-
-        $postContent = $this->post('/api/locations', $json);
-        if ('SUCCESS' === $postContent->status) {
-            $this->logger->info(sprintf('Location %s successfully created', $postContent->response->location->name));
-
-            return $postContent->response->location;
-        }
-
-        throw new LocationException(sprintf('Error on location creation : %s', $postContent->message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $entityResponse
+        );
     }
 
     /**
-     * @param int $id uberall locationId to change the status
-     * @param string $status
+     * @param int $id uberall locationId to update
+     * @param Location $location
+     * @param bool $throw
      *
-     * @return void
+     * @return UberallResponse
      * @throws LocationException
      */
-    public function changeStatus($id, $status)
+    public function update(int $id, Location $location, bool $throw = true): UberallResponse
     {
-        $content = $this->patch('/api/locations/' . $id, json_encode(['status' => $status]));
-        if ('SUCCESS' === $content->status) {
-            $this->logger->info(sprintf('Status of location %d successfully modified (status %s)', $id, $status));
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $responseEntity = LocationResponse::class;
+        $json = $this->serializer->serialize(
+            $location,
+            [
+                'skip_null_values' => true
+            ]
+        );
 
-            return;
+        $response = $this->patch($service, $json);
+        if (200 !== $response->getStatusCode()) {
+            $responseEntity = UberallGenericResponse::class;
+            $this->logger->warning(sprintf('Location %d update failed, payload=%s', $id, $json));
+            if (true === $throw) {
+                throw new LocationException(
+                    'Location update failed.',
+                    0,
+                    array_merge(["id" => $id], $response->toArray(false))
+                );
+            }
+        } else {
+            $this->logger->info(sprintf('Location %d sucessfully updated, payload=%s', $id, $json));
         }
 
-        $message = $content->message ?? var_export($content, true);
-        throw new LocationException(sprintf('Error on location status %s change : %s', $status, $message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            $responseEntity
+        );
     }
 
     /**
-     * @param string $id uberall locationId to remove
+     * @param int $id uberall locationId to remove
      *
-     * @return void
-     * @throws LocationException
+     * @return UberallResponse
      */
-    public function remove($id)
+    public function remove(int $id): UberallResponse
     {
-        $content = $this->delete('/api/locations/' . $id);
-        if ('SUCCESS' === $content->status) {
-            $this->logger->info(sprintf('Location %d successfully deleted', $id));
-
-            return;
-        }
-
-        $message = $content->message ?? var_export($content, true);
-        throw new LocationException(sprintf('Error on location deletion : %s', $message), Response::HTTP_INTERNAL_SERVER_ERROR);
+        $service = sprintf('/api/%s/%d', self::ENTITY, $id);
+        $response = $this->delete($service);
+        
+        return new UberallResponse(
+            $response,
+            $this->serializer,
+            UberallGenericResponse::class
+        );
     }
 }

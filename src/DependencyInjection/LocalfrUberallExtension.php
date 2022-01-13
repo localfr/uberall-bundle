@@ -14,12 +14,30 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  */
 class LocalfrUberallExtension extends Extension
 {
+    public const EXTENSION_ALIAS = 'localfr_uberall';
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAlias(): string
+    {
+        return self::EXTENSION_ALIAS;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
+        $loader = new Loader\YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config')
+        );
+        $loader->load('services.yaml');
+
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter('localfr_uberall.config.base_url', $config['base_url']);
+        $container->setParameter('localfr_uberall.config.private_key', $config['private_key']);
     }
 }

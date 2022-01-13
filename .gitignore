@@ -1,1 +1,15 @@
+# IDE
 .idea
+
+# Env
+.env.local
+.env.*.local
+
+# Vendors
+vendor/
+
+# Composer
+composer.lock
+
+# Tests
+phpunit.xml
