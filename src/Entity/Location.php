@@ -385,7 +385,7 @@ class Location extends UberallEntityBase
         $this->addressDisplay = $payload['addressDisplay'] ?? null;
         $this->addressExtra = $payload['addressExtra'] ?? null;
 
-        $this->attributes = null;
+        $this->attributes = new ArrayCollection();
         if (array_key_exists('attributes', $payload) && is_array($payload['attributes'] && !empty($payload['attributes']))) {
             foreach ($payload['attributes'] as $attribute) {
                 $this->addAttribute($attribute);
@@ -394,7 +394,7 @@ class Location extends UberallEntityBase
 
         $this->autoSync = $payload['autoSync'] ?? null;
         
-        $this->brands = null;
+        $this->brands = new ArrayCollection();
         if (array_key_exists('brands', $payload) && is_array($payload['brands'] && !empty($payload['brands']))) {
             foreach ($payload['brands'] as $brand) {
                 $this->addBrand($brand);
@@ -403,7 +403,7 @@ class Location extends UberallEntityBase
 
         $this->businessId = $payload['businessId'] ?? null;
         
-        $this->categories = null;
+        $this->categories = new ArrayCollection();
         if (array_key_exists('categories', $payload) && is_array($payload['categories'] && !empty($payload['categories']))) {
             foreach ($payload['categories'] as $category) {
                 $this->addCategory($category);
@@ -415,7 +415,7 @@ class Location extends UberallEntityBase
         $this->cleansingComment = $payload['cleansingComment'] ?? null;
         $this->cleansingInvalidDataReason = $payload['cleansingInvalidDataReason'] ?? null;
         
-        $this->contentLists = null;
+        $this->contentLists = new ArrayCollection();
         if (array_key_exists('contentLists', $payload) && is_array($payload['contentLists'] && !empty($payload['contentLists']))) {
             foreach ($payload['contentLists'] as $contentList) {
                 $this->addContentList($contentList);
@@ -424,7 +424,7 @@ class Location extends UberallEntityBase
 
         $this->country = $payload['country'] ?? null;
         
-        $this->customFields = null;
+        $this->customFields = new ArrayCollection();
         if (array_key_exists('customFields', $payload) && is_array($payload['customFields'] && !empty($payload['customFields']))) {
             foreach ($payload['customFields'] as $customField) {
                 $this->addCustomField($customField);
@@ -440,7 +440,7 @@ class Location extends UberallEntityBase
         $this->emailVerification = $payload['emailVerification'] ?? null;
         $this->fax = $payload['fax'] ?? null;
         
-        $this->features = null;
+        $this->features = new ArrayCollection();
         if (array_key_exists('features', $payload) && is_array($payload['features'] && !empty($payload['features']))) {
             foreach ($payload['features'] as $feature) {
                 $this->addFeature($feature);
@@ -451,21 +451,21 @@ class Location extends UberallEntityBase
         $this->identifier = $payload['identifier'] ?? null;
         $this->imprint = $payload['imprint'] ?? null;
         
-        $this->keywords = null;
+        $this->keywords = new ArrayCollection();
         if (array_key_exists('keywords', $payload) && is_array($payload['keywords'] && !empty($payload['keywords']))) {
             foreach ($payload['keywords'] as $keyword) {
                 $this->addKeyword($keyword);
             }
         }
         
-        $this->labels = null;
+        $this->labels = new ArrayCollection();
         if (array_key_exists('labels', $payload) && is_array($payload['labels'] && !empty($payload['labels']))) {
             foreach ($payload['labels'] as $label) {
                 $this->addLabel($label);
             }
         }
 
-        $this->languages = null;
+        $this->languages = new ArrayCollection();
         if (array_key_exists('languages', $payload) && is_array($payload['languages'] && !empty($payload['languages']))) {
             foreach ($payload['languages'] as $language) {
                 $this->addLanguage($language);
@@ -477,7 +477,7 @@ class Location extends UberallEntityBase
         $this->lat = $payload['lat'] ?? null;
         $this->legalIdent = $payload['legalIdent'] ?? null;
 
-        $this->listings = null;
+        $this->listings = new ArrayCollection();
         if (array_key_exists('listings', $payload) && is_array($payload['listings'] && !empty($payload['listings']))) {
             foreach ($payload['listings'] as $listing) {
                 $this->addListing($listing);
@@ -489,14 +489,14 @@ class Location extends UberallEntityBase
         $this->lng = $payload['lng'] ?? null;
         $this->mainPhoto = $payload['mainPhoto'] ?? null;
         
-        $this->missingMandatoryFields = null;
+        $this->missingMandatoryFields = new ArrayCollection();
         if (array_key_exists('missingMandatoryFields', $payload) && is_array($payload['missingMandatoryFields'] && !empty($payload['missingMandatoryFields']))) {
             foreach ($payload['missingMandatoryFields'] as $missingMandatoryField) {
                 $this->addMissingMandatoryField($missingMandatoryField);
             }
         }
         
-        $this->moreHours = null;
+        $this->moreHours = new ArrayCollection();
         if (array_key_exists('moreHours', $payload) && is_array($payload['moreHours'] && !empty($payload['moreHours']))) {
             foreach ($payload['moreHours'] as $moreHour) {
                 $this->addMoreHour($moreHour);
@@ -506,7 +506,7 @@ class Location extends UberallEntityBase
         $this->name = $payload['name'] ?? null;
         $this->nameDescriptor = $payload['nameDescriptor'] ?? null;
         
-        $this->openingHours = null;
+        $this->openingHours = new ArrayCollection();
         if (array_key_exists('openingHours', $payload) && is_array($payload['openingHours'] && !empty($payload['openingHours']))) {
             foreach ($payload['openingHours'] as $openingHour) {
                 $this->addOpeningHour($openingHour);
@@ -515,7 +515,7 @@ class Location extends UberallEntityBase
 
         $this->openingHoursNotes = $payload['openingHoursNotes'] ?? null;
         
-        $this->paymentOptions = null;
+        $this->paymentOptions = new ArrayCollection();
         if (array_key_exists('paymentOptions', $payload) && is_array($payload['paymentOptions'] && !empty($payload['paymentOptions']))) {
             foreach ($payload['paymentOptions'] as $paymentOption) {
                 $this->addPaymentOption($paymentOption);
@@ -524,7 +524,7 @@ class Location extends UberallEntityBase
 
         $this->phone = $payload['phone'] ?? null;
         
-        $this->photos = null;
+        $this->photos = new ArrayCollection();
         if (array_key_exists('photos', $payload) && is_array($payload['photos'] && !empty($payload['photos']))) {
             foreach ($payload['photos'] as $photo) {
                 $this->addPhoto($photo);
@@ -535,28 +535,28 @@ class Location extends UberallEntityBase
         $this->province = $payload['province'] ?? null;
         $this->publishedListingsCount = $payload['publishedListingsCount'] ?? null;
         
-        $this->serviceAreas = null;
+        $this->serviceAreas = new ArrayCollection();
         if (array_key_exists('serviceAreas', $payload) && is_array($payload['serviceAreas'] && !empty($payload['serviceAreas']))) {
             foreach ($payload['serviceAreas'] as $serviceArea) {
                 $this->addServiceArea($serviceArea);
             }
         }
 
-        $this->services = null;
+        $this->services = new ArrayCollection();
         if (array_key_exists('services', $payload) && is_array($payload['services'] && !empty($payload['services']))) {
             foreach ($payload['services'] as $service) {
                 $this->addService($service);
             }
         }
 
-        $this->socialProfiles = null;
+        $this->socialProfiles = new ArrayCollection();
         if (array_key_exists('socialProfiles', $payload) && is_array($payload['socialProfiles'] && !empty($payload['socialProfiles']))) {
             foreach ($payload['socialProfiles'] as $socialProfile) {
                 $this->addSocialProfile($socialProfile);
             }
         }
 
-        $this->specialOpeningHours = null;
+        $this->specialOpeningHours = new ArrayCollection();
         if (array_key_exists('specialOpeningHours', $payload) && is_array($payload['specialOpeningHours'] && !empty($payload['specialOpeningHours']))) {
             foreach ($payload['specialOpeningHours'] as $specialOpeningHour) {
                 $this->addSpecialOpeningHour($specialOpeningHour);
@@ -570,7 +570,7 @@ class Location extends UberallEntityBase
         $this->taxNumber = $payload['taxNumber'] ?? null;
         $this->updateHistory = $payload['updateHistory'] ?? null;
         
-        $this->videos = null;
+        $this->videos = new ArrayCollection();
         if (array_key_exists('videos', $payload) && is_array($payload['videos'] && !empty($payload['videos']))) {
             foreach ($payload['videos'] as $video) {
                 $this->addVideo($video);
