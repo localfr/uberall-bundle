@@ -39,3 +39,5 @@ services:
             $annotationsCacheAdapter: '@annotations.cache_adapter'
 
     Localfr\UberallBundle\Service\Rest\Client\Uberall\UberallClient: '@localfr.uberall.client'
+
+    Localfr\UberallBundle\Component\Serializer\UberallSerializer: '@localfr.uberall.serializer'
