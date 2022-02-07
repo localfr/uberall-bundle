@@ -19,7 +19,7 @@ class AttributeWrapper
     /** @var string */
     private $valueType;
 
-    /** @var string */
+    /** @var array<string> */
     private $valueMetadata;
 
     /**
@@ -34,7 +34,7 @@ class AttributeWrapper
         $this->externalId = $payload['externalId'] ?? null;
         $this->value = $payload['value'] ?? null;
         $this->valueType = $payload['valueType'] ?? null;
-        $this->valueMetadata = $payload['valueMetadata'] ?? null;
+        $this->valueMetadata = $payload['valueMetadata'] ?? [];
     }
 
     /**
@@ -133,21 +133,21 @@ class AttributeWrapper
     }
 
     /**
-     * @return string|null
+     * @return array<string>
      */
-    public function getValueMetadata(): ?string
+    public function getValueMetadata(): array
     {
         return $this->valueMetadata;
     }
 
     /**
-     * @param string|null $valueMetadata
+     * @param array<string>|null $valueMetadata
      * 
      * @return AttributeWrapper
      */
-    public function setValueMetadata(?string $valueMetadata): self
+    public function setValueMetadata(?array $valueMetadata = []): self
     {
-        $this->valueMetadata = $valueMetadata;
+        $this->valueMetadata = $valueMetadata ?: [];
         return $this;
     }
 }
