@@ -13,3 +13,4 @@ composer.lock
 
 # Tests
 phpunit.xml
+testApp/

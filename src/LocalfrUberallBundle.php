@@ -2,6 +2,7 @@
 
 namespace Localfr\UberallBundle;
 
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Localfr\UberallBundle\DependencyInjection\LocalfrUberallExtension;
 
@@ -12,7 +13,7 @@ class LocalfrUberallBundle extends Bundle
      *
      * @return LocalfrUberallExtension
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         if (null === $this->extension) {
             $this->extension = new LocalfrUberallExtension();

@@ -36,12 +36,12 @@ class AppKernel extends Kernel
         return __DIR__;
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return '/tmp/symfony-cache';
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return '/tmp/symfony-cache';
     } 

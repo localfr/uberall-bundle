@@ -3,6 +3,10 @@ services:
         autowire: true      
         autoconfigure: true 
         public: false
+    
+    Symfony\Component\Cache\Adapter\TagAwareAdapter: '@annotations.cache_adapter'
+    annotations.cache_adapter:
+        class: Symfony\Component\Cache\Adapter\TagAwareAdapter
 
     localfr.uberall.abstract_client:
         class: Localfr\UberallBundle\Service\Rest\Client\Uberall\AbstractUberallClient
