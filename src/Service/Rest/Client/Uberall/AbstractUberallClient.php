@@ -3,7 +3,6 @@
 namespace Localfr\UberallBundle\Service\Rest\Client\Uberall;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -22,11 +21,6 @@ abstract class AbstractUberallClient
      * @var LoggerInterface
      */
     protected $logger;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
 
     /**
      * @var UberallSerializer
@@ -65,7 +59,6 @@ abstract class AbstractUberallClient
     /**
      * @param HttpClientInterface $httpClient
      * @param LoggerInterface $logger
-     * @param ContainerInterface $container
      * @param UberallSerializer $serializer
      * @param ValidatorInterface $validator
      * @param string $baseUrl
@@ -74,7 +67,6 @@ abstract class AbstractUberallClient
     public function __construct(
         HttpClientInterface $httpClient,
         LoggerInterface $logger,
-        ContainerInterface $container,
         UberallSerializer $serializer,
         ValidatorInterface $validator,
         string $baseUrl,
@@ -82,7 +74,6 @@ abstract class AbstractUberallClient
     ) {
         $this->httpClient = $httpClient;
         $this->logger = $logger;
-        $this->container = $container;
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->baseUrl = $baseUrl;
@@ -167,7 +158,7 @@ abstract class AbstractUberallClient
      * @return mixed|string
      * @throws \Exception
      */
-    public function getAccessToken($userEmail): ?string
+    public function getAccessToken(string $userEmail): ?string
     {
         if (!isset($this->accessToken)){
             $this->accessToken = $this->generateUserAccessToken($userEmail);

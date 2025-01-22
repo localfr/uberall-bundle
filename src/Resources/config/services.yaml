@@ -7,6 +7,8 @@ services:
     Symfony\Component\Cache\Adapter\TagAwareAdapter: '@annotations.cache_adapter'
     annotations.cache_adapter:
         class: Symfony\Component\Cache\Adapter\TagAwareAdapter
+        arguments:
+            $itemsPool: '@cache.app'
 
     localfr.uberall.abstract_client:
         class: Localfr\UberallBundle\Service\Rest\Client\Uberall\AbstractUberallClient
